@@ -1,5 +1,7 @@
 using Dot.Net.WebApi.Domain;
 using Microsoft.AspNetCore.Mvc;
+using Dot.Net.WebApi.Services;
+
 
 namespace Dot.Net.WebApi.Controllers
 {
@@ -7,34 +9,74 @@ namespace Dot.Net.WebApi.Controllers
     [Route("[controller]")]
     public class BidListController : ControllerBase
     {
-        [HttpGet]
-        [Route("validate")]
-        public IActionResult Validate([FromBody] BidList bidList)
+
+        private readonly IBidListService _bidListService;
+
+        public BidListController(IBidListService bidListService)
         {
-            // TODO: check data valid and save to db, after saving return bid list
-            return Ok();
+            _bidListService = bidListService;
         }
 
-        [HttpGet]
-        [Route("update/{id}")]
-        public IActionResult ShowUpdateForm(int id)
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBidById(int id)
         {
-            return Ok();
+            var bidList = await _bidListService.GetBidByIdAsync(id);
+            if (bidList == null)
+            {
+                return NotFound();
+            }
+            return Ok(bidList);
         }
 
         [HttpPost]
-        [Route("update/{id}")]
-        public IActionResult UpdateBid(int id, [FromBody] BidList bidList)
+        public async Task<IActionResult> CreateBid([FromBody] BidList bidList)
         {
-            // TODO: check required fields, if valid call service to update Bid and return list Bid
-            return Ok();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _bidListService.ValidateBidAsync(bidList);
+            await _bidListService.AddBidAsync(bidList);
+
+            return CreatedAtAction(nameof(GetBidById), new { id = bidList.BidListId }, bidList);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
-        public IActionResult DeleteBid(int id)
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBid(int id, [FromBody] BidList bidList)
         {
-            return Ok();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                await _bidListService.UpdateBidAsync(id, bidList);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+
+            return Ok(bidList);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBid(int id)
+        {
+            try
+            {
+                await _bidListService.DeleteBidAsync(id);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }
