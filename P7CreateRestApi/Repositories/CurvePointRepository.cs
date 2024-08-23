@@ -1,9 +1,9 @@
 ﻿using Dot.Net.WebApi.Domain;
 using Dot.Net.WebApi.Data;
-using P7CreateRestApi.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Dot.Net.WebApi.Repositories;
 
 namespace Dot.Net.WebApi.Repositories
 {
@@ -16,30 +16,35 @@ namespace Dot.Net.WebApi.Repositories
             _context = context;
         }
 
-        public void Add(CurvePoint curvePoint)
+        public async Task AddAsync(CurvePoint curvePoint)
         {
-            _context.CurvePoints.Add(curvePoint);
-            _context.SaveChanges();
+            await _context.CurvePoints.AddAsync(curvePoint);
+            await _context.SaveChangesAsync();
         }
 
-        public CurvePoint GetById(int id)
+        public async Task<CurvePoint> GetByIdAsync(int id)
         {
-            return _context.CurvePoints.Find(id);
+            return await _context.CurvePoints.FindAsync(id);
         }
 
-        public void Update(CurvePoint curvePoint)
+        public async Task<IEnumerable<CurvePoint>> GetAllAsync()
+        {
+            return await _context.CurvePoints.ToListAsync();
+        }
+
+        public async Task UpdateAsync(CurvePoint curvePoint)
         {
             _context.CurvePoints.Update(curvePoint);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var curvePoint = _context.CurvePoints.Find(id);
+            var curvePoint = await _context.CurvePoints.FindAsync(id);
             if (curvePoint != null)
             {
                 _context.CurvePoints.Remove(curvePoint);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

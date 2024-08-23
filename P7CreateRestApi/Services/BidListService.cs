@@ -1,127 +1,154 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Dot.Net.WebApi.Models;
 using Dot.Net.WebApi.Domain;
 using Dot.Net.WebApi.Repositories;
-using System;
-
 
 namespace Dot.Net.WebApi.Services
 {
-        public class BidListService : IBidListService
+    public class BidListService : IBidListService
+    {
+        private readonly IBidListRepository _repository;
+
+        public BidListService(IBidListRepository repository)
         {
-            private readonly IBidListRepository _bidListRepository;
-
-            public BidListService(IBidListRepository bidListRepository)
-            {
-                _bidListRepository = bidListRepository;
-            }
-
-            // Méthode pour récupérer un BidList par son ID
-            public async Task<BidList> GetBidByIdAsync(int id)
-            {
-                var bid = await _bidListRepository.GetByIdAsync(id);
-                if (bid == null)
-                {
-                    throw new KeyNotFoundException($"Bid with ID {id} not found.");
-                }
-                return bid;
-            }
-
-            // Méthode pour récupérer tous les BidLists
-            public async Task<IEnumerable<BidList>> GetAllBidsAsync()
-            {
-                return await _bidListRepository.GetAllAsync();
-            }
-
-            // Méthode pour ajouter un nouveau BidList
-            public async Task AddBidAsync(BidList bidList)
-            {
-                if (bidList == null)
-                {
-                    throw new ArgumentNullException(nameof(bidList), "BidList cannot be null.");
-                }
-
-                // Ajout d'une validation basique
-                ValidateBid(bidList);
-
-                await _bidListRepository.AddAsync(bidList);
-            }
-
-            // Méthode pour mettre à jour un BidList existant
-            public async Task UpdateBidAsync(int id, BidList bidList)
-            {
-                if (bidList == null)
-                {
-                    throw new ArgumentNullException(nameof(bidList), "BidList cannot be null.");
-                }
-
-                var existingBid = await _bidListRepository.GetByIdAsync(id);
-                if (existingBid == null)
-                {
-                    throw new KeyNotFoundException($"Bid with ID {id} not found.");
-                }
-
-                // Mise à jour des propriétés de l'entité existante
-                existingBid.Account = bidList.Account ?? existingBid.Account;
-                existingBid.BidType = bidList.BidType ?? existingBid.BidType;
-                existingBid.BidQuantity = bidList.BidQuantity ?? existingBid.BidQuantity;
-                existingBid.AskQuantity = bidList.AskQuantity ?? existingBid.AskQuantity;
-                existingBid.Bid = bidList.Bid ?? existingBid.Bid;
-                existingBid.Ask = bidList.Ask ?? existingBid.Ask;
-                existingBid.Benchmark = bidList.Benchmark ?? existingBid.Benchmark;
-                existingBid.BidListDate = bidList.BidListDate ?? existingBid.BidListDate;
-                existingBid.Commentary = bidList.Commentary ?? existingBid.Commentary;
-                existingBid.BidSecurity = bidList.BidSecurity ?? existingBid.BidSecurity;
-                existingBid.BidStatus = bidList.BidStatus ?? existingBid.BidStatus;
-                existingBid.Trader = bidList.Trader ?? existingBid.Trader;
-                existingBid.Book = bidList.Book ?? existingBid.Book;
-                existingBid.CreationName = bidList.CreationName ?? existingBid.CreationName;
-                existingBid.CreationDate = bidList.CreationDate ?? existingBid.CreationDate;
-                existingBid.RevisionName = bidList.RevisionName ?? existingBid.RevisionName;
-                existingBid.RevisionDate = bidList.RevisionDate ?? existingBid.RevisionDate;
-                existingBid.DealName = bidList.DealName ?? existingBid.DealName;
-                existingBid.DealType = bidList.DealType ?? existingBid.DealType;
-                existingBid.SourceListId = bidList.SourceListId ?? existingBid.SourceListId;
-                existingBid.Side = bidList.Side ?? existingBid.Side;
-
-                // Ajout d'une validation basique
-                ValidateBid(existingBid);
-
-                await _bidListRepository.UpdateAsync(existingBid);
-            }
-
-            // Méthode pour supprimer un BidList par son ID
-            public async Task DeleteBidAsync(int id)
-            {
-                var existingBid = await _bidListRepository.GetByIdAsync(id);
-                if (existingBid == null)
-                {
-                    throw new KeyNotFoundException($"Bid with ID {id} not found.");
-                }
-
-                await _bidListRepository.DeleteAsync(id);
-            }
-
-            // Méthode pour valider un BidList avant l'ajout ou la mise à jour
-            public async Task ValidateBidAsync(BidList bidList)
-            {
-                ValidateBid(bidList);
-                await Task.CompletedTask;
+            _repository = repository;
         }
 
-            // Validation de base pour un BidList
-            private void ValidateBid(BidList bidList)
+        public async Task<IEnumerable<BidListDTO>> GetAllAsync()
+        {
+            var bidLists = await _repository.GetAllAsync();
+            return bidLists.Select(b => new BidListDTO
             {
-            if (string.IsNullOrWhiteSpace(bidList.Account))
+                BidListId = b.BidListId,
+                Account = b.Account,
+                BidType = b.BidType,
+                BidQuantity = b.BidQuantity,
+                AskQuantity = b.AskQuantity,
+                Bid = b.Bid,
+                Ask = b.Ask,
+                Benchmark = b.Benchmark,
+                BidListDate = b.BidListDate,
+                Commentary = b.Commentary,
+                BidSecurity = b.BidSecurity,
+                BidStatus = b.BidStatus,
+                Trader = b.Trader,
+                Book = b.Book,
+                CreationName = b.CreationName,
+                CreationDate = b.CreationDate,
+                RevisionName = b.RevisionName,
+                RevisionDate = b.RevisionDate,
+                DealName = b.DealName,
+                DealType = b.DealType,
+                SourceListId = b.SourceListId,
+                Side = b.Side
+            });
+        }
+
+        public async Task<BidListDTO> GetByIdAsync(int id)
+        {
+            var bidList = await _repository.GetByIdAsync(id);
+            if (bidList == null)
             {
-                throw new ArgumentException("Account cannot be empty.", nameof(bidList));
+                return null;
+            }
+            return new BidListDTO
+            {
+                BidListId = bidList.BidListId,
+                Account = bidList.Account,
+                BidType = bidList.BidType,
+                BidQuantity = bidList.BidQuantity,
+                AskQuantity = bidList.AskQuantity,
+                Bid = bidList.Bid,
+                Ask = bidList.Ask,
+                Benchmark = bidList.Benchmark,
+                BidListDate = bidList.BidListDate,
+                Commentary = bidList.Commentary,
+                BidSecurity = bidList.BidSecurity,
+                BidStatus = bidList.BidStatus,
+                Trader = bidList.Trader,
+                Book = bidList.Book,
+                CreationName = bidList.CreationName,
+                CreationDate = bidList.CreationDate,
+                RevisionName = bidList.RevisionName,
+                RevisionDate = bidList.RevisionDate,
+                DealName = bidList.DealName,
+                DealType = bidList.DealType,
+                SourceListId = bidList.SourceListId,
+                Side = bidList.Side
+            };
+        }
+
+        public async Task<BidListDTO> AddAsync(BidListDTO dto)
+        {
+            var bidList = new BidList
+            {
+                Account = dto.Account,
+                BidType = dto.BidType,
+                BidQuantity = dto.BidQuantity,
+                AskQuantity = dto.AskQuantity,
+                Bid = dto.Bid,
+                Ask = dto.Ask,
+                Benchmark = dto.Benchmark,
+                BidListDate = dto.BidListDate,
+                Commentary = dto.Commentary,
+                BidSecurity = dto.BidSecurity,
+                BidStatus = dto.BidStatus,
+                Trader = dto.Trader,
+                Book = dto.Book,
+                CreationName = dto.CreationName,
+                CreationDate = dto.CreationDate,
+                RevisionName = dto.RevisionName,
+                RevisionDate = dto.RevisionDate,
+                DealName = dto.DealName,
+                DealType = dto.DealType,
+                SourceListId = dto.SourceListId,
+                Side = dto.Side
+            };
+            await _repository.AddAsync(bidList);
+            dto.BidListId = bidList.BidListId;
+            return dto;
+        }
+
+        public async Task<BidListDTO> UpdateAsync(int id, BidListDTO dto)
+        {
+            var bidList = await _repository.GetByIdAsync(id);
+            if (bidList == null)
+            {
+                return null;
             }
 
-            if (string.IsNullOrWhiteSpace(bidList.BidType))
-            {
-                throw new ArgumentException("BidType cannot be empty.", nameof(bidList));
-            }
-            // Ajouter d'autres règles de validation selon les besoins
+            bidList.Account = dto.Account;
+            bidList.BidType = dto.BidType;
+            bidList.BidQuantity = dto.BidQuantity;
+            bidList.AskQuantity = dto.AskQuantity;
+            bidList.Bid = dto.Bid;
+            bidList.Ask = dto.Ask;
+            bidList.Benchmark = dto.Benchmark;
+            bidList.BidListDate = dto.BidListDate;
+            bidList.Commentary = dto.Commentary;
+            bidList.BidSecurity = dto.BidSecurity;
+            bidList.BidStatus = dto.BidStatus;
+            bidList.Trader = dto.Trader;
+            bidList.Book = dto.Book;
+            bidList.CreationName = dto.CreationName;
+            bidList.CreationDate = dto.CreationDate;
+            bidList.RevisionName = dto.RevisionName;
+            bidList.RevisionDate = dto.RevisionDate;
+            bidList.DealName = dto.DealName;
+            bidList.DealType = dto.DealType;
+            bidList.SourceListId = dto.SourceListId;
+            bidList.Side = dto.Side;
+
+            await _repository.UpdateAsync(bidList);
+
+            return dto;
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _repository.DeleteAsync(id);
         }
     }
 }

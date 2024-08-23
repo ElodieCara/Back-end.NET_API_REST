@@ -1,11 +1,13 @@
-using Dot.Net.WebApi.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Dot.Net.WebApi.Services;
+using Dot.Net.WebApi.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Dot.Net.WebApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class CurveController : ControllerBase
     {
         private readonly ICurvePointService _service;
@@ -16,42 +18,16 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("list")]
-        public IActionResult Home()
+        public async Task<ActionResult<IEnumerable<CurvePointDTO>>> GetAllCurvePoints()
         {
-           
-            return Ok();
+            var curvePoints = await _service.GetAllAsync();
+            return Ok(curvePoints);
         }
 
-        [HttpPost]
-        [Route("add")]
-        public IActionResult AddCurvePoint([FromBody] CurvePoint curvePoint)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CurvePointDTO>> GetCurvePoint(int id)
         {
-            if (ModelState.IsValid)
-            {
-                _service.AddCurvePoint(curvePoint);
-                return Ok();
-            }
-            return BadRequest(ModelState);
-        }
-
-        [HttpPost]
-        [Route("validate")]
-        public IActionResult Validate([FromBody] CurvePoint curvePoint)
-        {
-            if (ModelState.IsValid)
-            {
-                _service.AddCurvePoint(curvePoint);
-                return Ok();
-            }
-            return BadRequest(ModelState);
-        }
-
-        [HttpGet]
-        [Route("update/{id}")]
-        public IActionResult ShowUpdateForm(int id)
-        {
-            var curvePoint = _service.GetCurvePointById(id);
+            var curvePoint = await _service.GetByIdAsync(id);
             if (curvePoint == null)
             {
                 return NotFound();
@@ -60,28 +36,46 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("update/{id}")]
-        public IActionResult UpdateCurvePoint(int id, [FromBody] CurvePoint curvePoint)
+        public async Task<ActionResult<CurvePointDTO>> AddCurvePoint(CurvePointDTO curvePointDTO)
         {
             if (ModelState.IsValid)
             {
-                _service.UpdateCurvePoint(curvePoint);
-                return Ok();
+                var newCurvePoint = await _service.AddAsync(curvePointDTO);
+                return CreatedAtAction(nameof(GetCurvePoint), new { id = newCurvePoint.Id }, newCurvePoint);
             }
             return BadRequest(ModelState);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
-        public IActionResult DeleteBid(int id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCurvePoint(int id, CurvePointDTO curvePointDTO)
         {
-            var curvePoint = _service.GetCurvePointById(id);
+            if (id != curvePointDTO.Id)
+            {
+                return BadRequest();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var updatedCurvePoint = await _service.UpdateAsync(id, curvePointDTO);
+                if (updatedCurvePoint == null)
+                {
+                    return NotFound();
+                }
+                return NoContent();
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCurvePoint(int id)
+        {
+            var curvePoint = await _service.GetByIdAsync(id);
             if (curvePoint == null)
             {
                 return NotFound();
             }
-            _service.DeleteCurvePoint(id);
-            return Ok();
+            await _service.DeleteAsync(id);
+            return NoContent();
         }
     }
 }

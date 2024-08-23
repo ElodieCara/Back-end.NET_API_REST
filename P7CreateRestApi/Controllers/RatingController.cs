@@ -1,60 +1,81 @@
-using Dot.Net.WebApi.Domain;
 using Microsoft.AspNetCore.Mvc;
-
+using Dot.Net.WebApi.Services;
+using Dot.Net.WebApi.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Dot.Net.WebApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class RatingController : ControllerBase
     {
-        // TODO: Inject Rating service
+        private readonly IRatingService _service;
 
-        [HttpGet]
-        [Route("list")]
-        public IActionResult Home()
+        public RatingController(IRatingService service)
         {
-            // TODO: find all Rating, add to model
-            return Ok();
+            _service = service;
         }
 
         [HttpGet]
-        [Route("add")]
-        public IActionResult AddRatingForm([FromBody]Rating rating)
+        public async Task<ActionResult<IEnumerable<RatingDTO>>> GetAllRatings()
         {
-            return Ok();
+            var ratings = await _service.GetAllAsync();
+            return Ok(ratings);
         }
 
-        [HttpGet]
-        [Route("validate")]
-        public IActionResult Validate([FromBody]Rating rating)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<RatingDTO>> GetRating(int id)
         {
-            // TODO: check data valid and save to db, after saving return Rating list
-            return Ok();
-        }
-
-        [HttpGet]
-        [Route("update/{id}")]
-        public IActionResult ShowUpdateForm(int id)
-        {
-            // TODO: get Rating by Id and to model then show to the form
-            return Ok();
+            var rating = await _service.GetByIdAsync(id);
+            if (rating == null)
+            {
+                return NotFound();
+            }
+            return Ok(rating);
         }
 
         [HttpPost]
-        [Route("update/{id}")]
-        public IActionResult UpdateRating(int id, [FromBody] Rating rating)
+        public async Task<ActionResult<RatingDTO>> AddRating(RatingDTO ratingDTO)
         {
-            // TODO: check required fields, if valid call service to update Rating and return Rating list
-            return Ok();
+            if (ModelState.IsValid)
+            {
+                var newRating = await _service.AddAsync(ratingDTO);
+                return CreatedAtAction(nameof(GetRating), new { id = newRating.Id }, newRating);
+            }
+            return BadRequest(ModelState);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
-        public IActionResult DeleteRating(int id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRating(int id, RatingDTO ratingDTO)
         {
-            // TODO: Find Rating by Id and delete the Rating, return to Rating list
-            return Ok();
+            if (id != ratingDTO.Id)
+            {
+                return BadRequest();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var updatedRating = await _service.UpdateAsync(id, ratingDTO);
+                if (updatedRating == null)
+                {
+                    return NotFound();
+                }
+                return NoContent();
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRating(int id)
+        {
+            var rating = await _service.GetByIdAsync(id);
+            if (rating == null)
+            {
+                return NotFound();
+            }
+            await _service.DeleteAsync(id);
+            return NoContent();
         }
     }
 }

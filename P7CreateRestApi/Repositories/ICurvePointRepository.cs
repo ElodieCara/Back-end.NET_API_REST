@@ -1,13 +1,15 @@
-﻿using Dot.Net.WebApi.Domain;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Dot.Net.WebApi.Domain;
 
-namespace P7CreateRestApi.Repositories
+namespace Dot.Net.WebApi.Repositories
 {
     public interface ICurvePointRepository
     {
-        void Add(CurvePoint curvePoint);
-        CurvePoint GetById(int id);
-        void Update(CurvePoint curvePoint);
-        void Delete(int id);
+        Task<IEnumerable<CurvePoint>> GetAllAsync();
+        Task<CurvePoint> GetByIdAsync(int id);
+        Task AddAsync(CurvePoint entity);
+        Task UpdateAsync(CurvePoint entity);
+        Task DeleteAsync(int id);
     }
-
 }

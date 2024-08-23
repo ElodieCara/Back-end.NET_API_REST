@@ -1,85 +1,139 @@
+using Dot.Net.WebApi.Models;
+using Dot.Net.WebApi.Services;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using Dot.Net.WebApi.Domain;
 using Dot.Net.WebApi.Repositories;
-using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace Dot.Net.WebApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private UserRepository _userRepository;
+        private readonly IAuthService _authService;
+        private readonly IUserRepository _userRepository;
 
-        public UserController(UserRepository userRepository)
+        public UserController(IAuthService authService, IUserRepository userRepository)
         {
+            _authService = authService;
             _userRepository = userRepository;
         }
 
-        [HttpGet]
-        [Route("list")]
-        public IActionResult Home()
+        // Authentification
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserDTO userDto)
         {
-            return Ok();
+            var user = await _authService.Authenticate(userDto.Username, userDto.Password);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            return Ok(user);
         }
 
-        [HttpGet]
-        [Route("add")]
-        public IActionResult AddUser([FromBody]User user)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserDTO userDto)
         {
-            return Ok();
+            try
+            {
+                var user = await _authService.Register(userDto);
+                return Ok(user);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        [HttpGet]
-        [Route("validate")]
-        public IActionResult Validate([FromBody]User user)
+        // Gestion des utilisateurs
+        [HttpGet("list")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _userRepository.GetAllAsync();
+            return Ok(users);
+        }
+
+        [HttpPost("add")]
+        public async Task<IActionResult> AddUser([FromBody] User user)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
-           
-           _userRepository.Add(user);
 
-            return Ok();
+            await _userRepository.AddAsync(user);
+            return Ok(user);
         }
 
-        [HttpGet]
-        [Route("update/{id}")]
-        public IActionResult ShowUpdateForm(int id)
+        [HttpGet("validate")]
+        public async Task<IActionResult> Validate([FromBody] User user)
         {
-            User user = _userRepository.FindById(id);
-            
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _userRepository.AddAsync(user);
+            return Ok(user);
+        }
+
+        [HttpGet("update/{id}")]
+        public async Task<IActionResult> ShowUpdateForm(int id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+
             if (user == null)
-                throw new ArgumentException("Invalid user Id:" + id);
+            {
+                return NotFound($"Invalid user Id: {id}");
+            }
 
-            return Ok();
+            return Ok(user);
         }
 
-        [HttpPost]
-        [Route("update/{id}")]
-        public IActionResult UpdateUser(int id, [FromBody] User user)
+        [HttpPost("update/{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
         {
-            // TODO: check required fields, if valid call service to update Trade and return Trade list
-            return Ok();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var existingUser = await _userRepository.GetByIdAsync(id);
+            if (existingUser == null)
+            {
+                return NotFound($"User with Id: {id} not found");
+            }
+
+            existingUser.Username = user.Username;
+            existingUser.Password = user.Password;
+            existingUser.Fullname = user.Fullname;
+            existingUser.Role = user.Role;
+
+            await _userRepository.UpdateAsync(existingUser);
+            return Ok(existingUser);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
-        public IActionResult DeleteUser(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            User user = _userRepository.FindById(id);
-            
+            var user = await _userRepository.GetByIdAsync(id);
+
             if (user == null)
-                throw new ArgumentException("Invalid user Id:" + id);
+            {
+                return NotFound($"User with Id: {id} not found");
+            }
 
-            return Ok();
+            await _userRepository.DeleteAsync(id);
+            return NoContent();
         }
 
-        [HttpGet]
-        [Route("/secure/article-details")]
+        [HttpGet("/secure/article-details")]
         public async Task<ActionResult<List<User>>> GetAllUserArticles()
         {
-            return Ok();
+            var users = await _userRepository.GetAllAsync();
+            return Ok(users);
         }
     }
 }
