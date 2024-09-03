@@ -3,6 +3,7 @@ using Dot.Net.WebApi.Services;
 using Dot.Net.WebApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dot.Net.WebApi.Controllers
 {
@@ -18,14 +19,16 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CurvePointDTO>>> GetAllCurvePoints()
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<IEnumerable<CurvePointModel>>> GetAllCurvePoints()
         {
             var curvePoints = await _service.GetAllAsync();
             return Ok(curvePoints);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CurvePointDTO>> GetCurvePoint(int id)
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<CurvePointModel>> GetCurvePoint(int id)
         {
             var curvePoint = await _service.GetByIdAsync(id);
             if (curvePoint == null)
@@ -36,7 +39,8 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CurvePointDTO>> AddCurvePoint(CurvePointDTO curvePointDTO)
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<CurvePointModel>> AddCurvePoint(CurvePointModel curvePointDTO)
         {
             if (ModelState.IsValid)
             {
@@ -47,7 +51,8 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCurvePoint(int id, CurvePointDTO curvePointDTO)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateCurvePoint(int id, CurvePointModel curvePointDTO)
         {
             if (id != curvePointDTO.Id)
             {
@@ -67,6 +72,7 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCurvePoint(int id)
         {
             var curvePoint = await _service.GetByIdAsync(id);

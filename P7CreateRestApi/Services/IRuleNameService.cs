@@ -6,10 +6,10 @@ namespace Dot.Net.WebApi.Services
 {
     public interface IRuleNameService
     {
-        Task<IEnumerable<RuleNameDTO>> GetAllAsync();
-        Task<RuleNameDTO> GetByIdAsync(int id);
-        Task<RuleNameDTO> AddAsync(RuleNameDTO dto);
-        Task<RuleNameDTO> UpdateAsync(int id, RuleNameDTO dto);
+        Task<IEnumerable<RuleNameModel>> GetAllAsync();
+        Task<RuleNameModel> GetByIdAsync(int id);
+        Task<RuleNameModel> AddAsync(RuleNameModel dto);
+        Task<RuleNameModel> UpdateAsync(int id, RuleNameModel dto);
         Task DeleteAsync(int id);
     }
 }

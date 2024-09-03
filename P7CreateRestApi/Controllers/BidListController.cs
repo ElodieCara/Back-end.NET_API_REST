@@ -3,6 +3,7 @@ using Dot.Net.WebApi.Services;
 using Dot.Net.WebApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dot.Net.WebApi.Controllers
 {
@@ -18,14 +19,16 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BidListDTO>>> GetAllBidLists()
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<IEnumerable<BidListModel>>> GetAllBidLists()
         {
             var bidLists = await _service.GetAllAsync();
             return Ok(bidLists);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BidListDTO>> GetBidList(int id)
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<BidListModel>> GetBidList(int id)
         {
             var bidList = await _service.GetByIdAsync(id);
             if (bidList == null)
@@ -36,7 +39,8 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BidListDTO>> AddBidList(BidListDTO bidListDTO)
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<BidListModel>> AddBidList(BidListModel bidListDTO)
         {
             if (ModelState.IsValid)
             {
@@ -47,7 +51,8 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBidList(int id, BidListDTO bidListDTO)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateBidList(int id, BidListModel bidListDTO)
         {
             if (id != bidListDTO.BidListId)
             {
@@ -64,6 +69,7 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteBidList(int id)
         {
             var bidList = await _service.GetByIdAsync(id);

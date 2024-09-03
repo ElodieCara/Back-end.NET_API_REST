@@ -16,10 +16,10 @@ namespace Dot.Net.WebApi.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<RatingDTO>> GetAllAsync()
+        public async Task<IEnumerable<RatingModel>> GetAllAsync()
         {
             var ratings = await _repository.GetAllAsync();
-            return ratings.Select(r => new RatingDTO
+            return ratings.Select(r => new RatingModel
             {
                 Id = r.Id,
                 MoodysRating = r.MoodysRating,
@@ -29,14 +29,14 @@ namespace Dot.Net.WebApi.Services
             });
         }
 
-        public async Task<RatingDTO> GetByIdAsync(int id)
+        public async Task<RatingModel> GetByIdAsync(int id)
         {
             var rating = await _repository.GetByIdAsync(id);
             if (rating == null)
             {
                 return null!;
             }
-            return new RatingDTO
+            return new RatingModel
             {
                 Id = rating.Id,
                 MoodysRating = rating.MoodysRating,
@@ -46,7 +46,7 @@ namespace Dot.Net.WebApi.Services
             };
         }
 
-        public async Task<RatingDTO> AddAsync(RatingDTO dto)
+        public async Task<RatingModel> AddAsync(RatingModel dto)
         {
             var rating = new Rating
             {
@@ -60,7 +60,7 @@ namespace Dot.Net.WebApi.Services
             return dto;
         }
 
-        public async Task<RatingDTO> UpdateAsync(int id, RatingDTO dto)
+        public async Task<RatingModel> UpdateAsync(int id, RatingModel dto)
         {
             var rating = await _repository.GetByIdAsync(id);
             if (rating == null)

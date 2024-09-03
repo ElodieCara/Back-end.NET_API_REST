@@ -6,10 +6,10 @@ namespace Dot.Net.WebApi.Services
 {
     public interface ITradeService
     {
-        Task<IEnumerable<TradeDTO>> GetAllAsync();
-        Task<TradeDTO> GetByIdAsync(int id);
-        Task<TradeDTO> AddAsync(TradeDTO dto);
-        Task<TradeDTO> UpdateAsync(int id, TradeDTO dto);
+        Task<IEnumerable<TradeModel>> GetAllAsync();
+        Task<TradeModel> GetByIdAsync(int id);
+        Task<TradeModel> AddAsync(TradeModel dto);
+        Task<TradeModel> UpdateAsync(int id, TradeModel dto);
         Task DeleteAsync(int id);
     }
 }

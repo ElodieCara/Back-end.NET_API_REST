@@ -16,10 +16,10 @@ namespace Dot.Net.WebApi.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<CurvePointDTO>> GetAllAsync()
+        public async Task<IEnumerable<CurvePointModel>> GetAllAsync()
         {
             var curvePoints = await _repository.GetAllAsync();
-            return curvePoints.Select(cp => new CurvePointDTO
+            return curvePoints.Select(cp => new CurvePointModel
             {
                 Id = cp.Id,
                 CurveId = cp.CurveId,
@@ -29,14 +29,14 @@ namespace Dot.Net.WebApi.Services
             });
         }
 
-        public async Task<CurvePointDTO> GetByIdAsync(int id)
+        public async Task<CurvePointModel> GetByIdAsync(int id)
         {
             var curvePoint = await _repository.GetByIdAsync(id);
             if (curvePoint == null)
             {
                 return null!;
             }
-            return new CurvePointDTO
+            return new CurvePointModel
             {
                 Id = curvePoint.Id,
                 CurveId = curvePoint.CurveId,
@@ -46,7 +46,7 @@ namespace Dot.Net.WebApi.Services
             };
         }
 
-        public async Task<CurvePointDTO> AddAsync(CurvePointDTO dto)
+        public async Task<CurvePointModel> AddAsync(CurvePointModel dto)
         {
             var curvePoint = new CurvePoint
             {
@@ -60,7 +60,7 @@ namespace Dot.Net.WebApi.Services
             return dto;
         }
 
-        public async Task<CurvePointDTO> UpdateAsync(int id, CurvePointDTO dto)
+        public async Task<CurvePointModel> UpdateAsync(int id, CurvePointModel dto)
         {
             var curvePoint = await _repository.GetByIdAsync(id);
             if (curvePoint == null)

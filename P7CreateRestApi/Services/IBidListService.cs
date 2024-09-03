@@ -6,10 +6,10 @@ namespace Dot.Net.WebApi.Services
 {
     public interface IBidListService
     {
-        Task<IEnumerable<BidListDTO>> GetAllAsync();
-        Task<BidListDTO> GetByIdAsync(int id);
-        Task<BidListDTO> AddAsync(BidListDTO dto);
-        Task<BidListDTO> UpdateAsync(int id, BidListDTO dto);
+        Task<IEnumerable<BidListModel>> GetAllAsync();
+        Task<BidListModel> GetByIdAsync(int id);
+        Task<BidListModel> AddAsync(BidListModel dto);
+        Task<BidListModel> UpdateAsync(int id, BidListModel dto);
         Task DeleteAsync(int id);
     }
 }

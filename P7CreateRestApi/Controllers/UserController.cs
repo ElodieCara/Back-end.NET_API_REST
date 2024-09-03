@@ -2,9 +2,9 @@ using Dot.Net.WebApi.Models;
 using Dot.Net.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Dot.Net.WebApi.Domain;
-using Dot.Net.WebApi.Repositories;
+using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
+using P7CreateRestApi.Models;
 
 namespace Dot.Net.WebApi.Controllers
 {
@@ -12,128 +12,77 @@ namespace Dot.Net.WebApi.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IAuthService _authService;
-        private readonly IUserRepository _userRepository;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUserService _userService;
 
-        public UserController(IAuthService authService, IUserRepository userRepository)
+        public UserController(UserManager<IdentityUser> userManager, IUserService userService)
         {
-            _authService = authService;
-            _userRepository = userRepository;
-        }
-
-        // Authentification
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserDTO userDto)
-        {
-            var user = await _authService.Authenticate(userDto.Username, userDto.Password);
-            if (user == null)
-            {
-                return Unauthorized();
-            }
-            return Ok(user);
+            _userManager = userManager;
+            _userService = userService;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserDTO userDto)
+        public async Task<IActionResult> Register([FromBody] UserModel userDto, string password)
         {
-            try
+            var user = new IdentityUser { UserName = userDto.Username, Email = userDto.Username };
+            var result = await _userManager.CreateAsync(user, password);
+
+            if (!result.Succeeded)
             {
-                var user = await _authService.Register(userDto);
-                return Ok(user);
+                return BadRequest(result.Errors);
             }
-            catch (System.Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            await _userManager.AddToRoleAsync(user, userDto.Role);
+            userDto.Id = user.Id;
+            return Ok(userDto);
         }
 
-        // Gestion des utilisateurs
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
+        {
+            var user = await _userManager.FindByNameAsync(loginModel.Username);
+            if (user == null || !(await _userManager.CheckPasswordAsync(user, loginModel.Password)))
+            {
+                return Unauthorized();
+            }
+           
+            return Ok(user);
+        }
+
         [HttpGet("list")]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _userRepository.GetAllAsync();
+            var users = await _userService.GetAllAsync();
             return Ok(users);
         }
 
-        [HttpPost("add")]
-        public async Task<IActionResult> AddUser([FromBody] User user)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(string id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            await _userRepository.AddAsync(user);
-            return Ok(user);
-        }
-
-        [HttpGet("validate")]
-        public async Task<IActionResult> Validate([FromBody] User user)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            await _userRepository.AddAsync(user);
-            return Ok(user);
-        }
-
-        [HttpGet("update/{id}")]
-        public async Task<IActionResult> ShowUpdateForm(int id)
-        {
-            var user = await _userRepository.GetByIdAsync(id);
-
+            var user = await _userService.GetByIdAsync(id);
             if (user == null)
             {
-                return NotFound($"Invalid user Id: {id}");
+                return NotFound();
             }
-
             return Ok(user);
         }
 
-        [HttpPost("update/{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserModel userDto)
         {
-            if (!ModelState.IsValid)
+            var updatedUser = await _userService.UpdateAsync(id, userDto);
+            if (updatedUser == null)
             {
-                return BadRequest(ModelState);
+                return NotFound();
             }
-
-            var existingUser = await _userRepository.GetByIdAsync(id);
-            if (existingUser == null)
-            {
-                return NotFound($"User with Id: {id} not found");
-            }
-
-            existingUser.Username = user.Username;
-            existingUser.Password = user.Password;
-            existingUser.Fullname = user.Fullname;
-            existingUser.Role = user.Role;
-
-            await _userRepository.UpdateAsync(existingUser);
-            return Ok(existingUser);
+            return Ok(updatedUser);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
-
-            if (user == null)
-            {
-                return NotFound($"User with Id: {id} not found");
-            }
-
-            await _userRepository.DeleteAsync(id);
+            await _userService.DeleteAsync(id);
             return NoContent();
-        }
-
-        [HttpGet("/secure/article-details")]
-        public async Task<ActionResult<List<User>>> GetAllUserArticles()
-        {
-            var users = await _userRepository.GetAllAsync();
-            return Ok(users);
         }
     }
 }

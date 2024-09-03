@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dot.Net.WebApi.Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace Dot.Net.WebApi.Repositories
 {
     public interface IUserRepository
     {
-        Task<User> GetByUsernameAsync(string username);
-        Task<IEnumerable<User>> GetAllAsync();
-        Task<User> GetByIdAsync(int id);
-        Task AddAsync(User entity);
-        Task UpdateAsync(User entity);
-        Task DeleteAsync(int id);
+        Task<IdentityUser> GetByUsernameAsync(string username);
+        Task<IEnumerable<IdentityUser>> GetAllAsync();
+        Task<IdentityUser> GetByIdAsync(string id);
+        Task AddAsync(IdentityUser entity, string password);
+        Task UpdateAsync(IdentityUser entity);
+        Task DeleteAsync(string id);
     }
 }

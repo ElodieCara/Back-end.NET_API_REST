@@ -17,10 +17,10 @@ namespace Dot.Net.WebApi.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<RuleNameDTO>> GetAllAsync()
+        public async Task<IEnumerable<RuleNameModel>> GetAllAsync()
         {
             var rules = await _repository.GetAllAsync();
-            return rules.Select(r => new RuleNameDTO
+            return rules.Select(r => new RuleNameModel
             {
                 Id = r.Id,
                 Name = r.Name,
@@ -32,14 +32,14 @@ namespace Dot.Net.WebApi.Services
             });
         }
 
-        public async Task<RuleNameDTO> GetByIdAsync(int id)
+        public async Task<RuleNameModel> GetByIdAsync(int id)
         {
             var rule = await _repository.GetByIdAsync(id);
             if (rule == null)
             {
                 return null!;
             }
-            return new RuleNameDTO
+            return new RuleNameModel
             {
                 Id = rule.Id,
                 Name = rule.Name,
@@ -51,7 +51,7 @@ namespace Dot.Net.WebApi.Services
             };
         }
 
-        public async Task<RuleNameDTO> AddAsync(RuleNameDTO dto)
+        public async Task<RuleNameModel> AddAsync(RuleNameModel dto)
         {
             var ruleName = new RuleName
             {
@@ -67,7 +67,7 @@ namespace Dot.Net.WebApi.Services
             return dto;
         }
 
-        public async Task<RuleNameDTO> UpdateAsync(int id, RuleNameDTO dto)
+        public async Task<RuleNameModel> UpdateAsync(int id, RuleNameModel dto)
         {
             var rule = await _repository.GetByIdAsync(id);
             if (rule == null)

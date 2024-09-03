@@ -3,6 +3,7 @@ using Dot.Net.WebApi.Services;
 using Dot.Net.WebApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dot.Net.WebApi.Controllers
 {
@@ -18,14 +19,16 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RatingDTO>>> GetAllRatings()
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<IEnumerable<RatingModel>>> GetAllRatings()
         {
             var ratings = await _service.GetAllAsync();
             return Ok(ratings);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<RatingDTO>> GetRating(int id)
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<RatingModel>> GetRating(int id)
         {
             var rating = await _service.GetByIdAsync(id);
             if (rating == null)
@@ -36,7 +39,8 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<RatingDTO>> AddRating(RatingDTO ratingDTO)
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<RatingModel>> AddRating(RatingModel ratingDTO)
         {
             if (ModelState.IsValid)
             {
@@ -47,7 +51,8 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRating(int id, RatingDTO ratingDTO)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateRating(int id, RatingModel ratingDTO)
         {
             if (id != ratingDTO.Id)
             {
@@ -67,6 +72,7 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRating(int id)
         {
             var rating = await _service.GetByIdAsync(id);

@@ -6,10 +6,10 @@ namespace Dot.Net.WebApi.Services
 {
     public interface IRatingService
     {
-        Task<IEnumerable<RatingDTO>> GetAllAsync();
-        Task<RatingDTO> GetByIdAsync(int id);
-        Task<RatingDTO> AddAsync(RatingDTO dto);
-        Task<RatingDTO> UpdateAsync(int id, RatingDTO dto);
+        Task<IEnumerable<RatingModel>> GetAllAsync();
+        Task<RatingModel> GetByIdAsync(int id);
+        Task<RatingModel> AddAsync(RatingModel dto);
+        Task<RatingModel> UpdateAsync(int id, RatingModel dto);
         Task DeleteAsync(int id);
     }
 }

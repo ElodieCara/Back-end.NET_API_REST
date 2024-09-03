@@ -3,6 +3,7 @@ using Dot.Net.WebApi.Services;
 using Dot.Net.WebApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dot.Net.WebApi.Controllers
 {
@@ -18,14 +19,16 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TradeDTO>>> GetAllTrades()
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<IEnumerable<TradeModel>>> GetAllTrades()
         {
             var trades = await _service.GetAllAsync();
             return Ok(trades);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TradeDTO>> GetTrade(int id)
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<TradeModel>> GetTrade(int id)
         {
             var trade = await _service.GetByIdAsync(id);
             if (trade == null)
@@ -36,7 +39,8 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TradeDTO>> AddTrade(TradeDTO tradeDTO)
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<TradeModel>> AddTrade(TradeModel tradeDTO)
         {
             if (ModelState.IsValid)
             {
@@ -47,7 +51,8 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTrade(int id, TradeDTO tradeDTO)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateTrade(int id, TradeModel tradeDTO)
         {
             if (id != tradeDTO.TradeId)
             {
@@ -67,6 +72,7 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteTrade(int id)
         {
             var trade = await _service.GetByIdAsync(id);

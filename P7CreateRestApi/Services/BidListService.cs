@@ -16,10 +16,10 @@ namespace Dot.Net.WebApi.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<BidListDTO>> GetAllAsync()
+        public async Task<IEnumerable<BidListModel>> GetAllAsync()
         {
             var bidLists = await _repository.GetAllAsync();
-            return bidLists.Select(b => new BidListDTO
+            return bidLists.Select(b => new BidListModel
             {
                 BidListId = b.BidListId,
                 Account = b.Account,
@@ -46,14 +46,14 @@ namespace Dot.Net.WebApi.Services
             });
         }
 
-        public async Task<BidListDTO> GetByIdAsync(int id)
+        public async Task<BidListModel> GetByIdAsync(int id)
         {
             var bidList = await _repository.GetByIdAsync(id);
             if (bidList == null)
             {
                 return null;
             }
-            return new BidListDTO
+            return new BidListModel
             {
                 BidListId = bidList.BidListId,
                 Account = bidList.Account,
@@ -80,7 +80,7 @@ namespace Dot.Net.WebApi.Services
             };
         }
 
-        public async Task<BidListDTO> AddAsync(BidListDTO dto)
+        public async Task<BidListModel> AddAsync(BidListModel dto)
         {
             var bidList = new BidList
             {
@@ -111,7 +111,7 @@ namespace Dot.Net.WebApi.Services
             return dto;
         }
 
-        public async Task<BidListDTO> UpdateAsync(int id, BidListDTO dto)
+        public async Task<BidListModel> UpdateAsync(int id, BidListModel dto)
         {
             var bidList = await _repository.GetByIdAsync(id);
             if (bidList == null)

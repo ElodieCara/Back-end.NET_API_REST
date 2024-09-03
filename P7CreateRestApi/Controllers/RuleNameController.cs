@@ -3,6 +3,7 @@ using Dot.Net.WebApi.Services;
 using Dot.Net.WebApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dot.Net.WebApi.Controllers
 {
@@ -18,14 +19,16 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RuleNameDTO>>> GetAllRuleNames()
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<IEnumerable<RuleNameModel>>> GetAllRuleNames()
         {
             var ruleNames = await _service.GetAllAsync();
             return Ok(ruleNames);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<RuleNameDTO>> GetRuleName(int id)
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<RuleNameModel>> GetRuleName(int id)
         {
             var ruleName = await _service.GetByIdAsync(id);
             if (ruleName == null)
@@ -36,7 +39,8 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<RuleNameDTO>> AddRuleName(RuleNameDTO ruleNameDTO)
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<RuleNameModel>> AddRuleName(RuleNameModel ruleNameDTO)
         {
             if (ModelState.IsValid)
             {
@@ -47,7 +51,8 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRuleName(int id, RuleNameDTO ruleNameDTO)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateRuleName(int id, RuleNameModel ruleNameDTO)
         {
             if (id != ruleNameDTO.Id)
             {
@@ -67,6 +72,7 @@ namespace Dot.Net.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRuleName(int id)
         {
             var ruleName = await _service.GetByIdAsync(id);

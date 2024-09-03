@@ -6,10 +6,10 @@ namespace Dot.Net.WebApi.Services
 {
     public interface ICurvePointService
     {
-        Task<IEnumerable<CurvePointDTO>> GetAllAsync();
-        Task<CurvePointDTO> GetByIdAsync(int id);
-        Task<CurvePointDTO> AddAsync(CurvePointDTO dto);
-        Task<CurvePointDTO> UpdateAsync(int id, CurvePointDTO dto);
+        Task<IEnumerable<CurvePointModel>> GetAllAsync();
+        Task<CurvePointModel> GetByIdAsync(int id);
+        Task<CurvePointModel> AddAsync(CurvePointModel dto);
+        Task<CurvePointModel> UpdateAsync(int id, CurvePointModel dto);
         Task DeleteAsync(int id);
     }
 }
