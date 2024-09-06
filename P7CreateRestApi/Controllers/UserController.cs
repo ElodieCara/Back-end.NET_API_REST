@@ -5,50 +5,51 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using P7CreateRestApi.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace Dot.Net.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
-    {
-        private readonly UserManager<IdentityUser> _userManager;
+    {        
         private readonly IUserService _userService;
+        private readonly ILogger <UserController> _logger;
 
-        public UserController(UserManager<IdentityUser> userManager, IUserService userService)
+        public UserController(IUserService userService, ILogger<UserController> logger)
         {
-            _userManager = userManager;
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserModel userDto, string password)
         {
-            var user = new IdentityUser { UserName = userDto.Username, Email = userDto.Username };
-            var result = await _userManager.CreateAsync(user, password);
-
-            if (!result.Succeeded)
+            var result = await _userService.AddAsync(userDto, password);
+            if (result == null)
             {
-                return BadRequest(result.Errors);
+                _logger.LogError("User creation failed for {Username}", userDto.Username);
+                return BadRequest("User creation failed");
             }
 
-            await _userManager.AddToRoleAsync(user, userDto.Role);
-            userDto.Id = user.Id;
-            return Ok(userDto);
+            return Ok(result);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-            var user = await _userManager.FindByNameAsync(loginModel.Username);
-            if (user == null || !(await _userManager.CheckPasswordAsync(user, loginModel.Password)))
+            var user = await _userService.LoginAsync(loginModel.Username, loginModel.Password);
+            if (user == null)
             {
+                _logger.LogWarning("Unauthorized login attempt for {Username}", loginModel.Username);
                 return Unauthorized();
             }
-           
+
             return Ok(user);
         }
 
+        [Authorize]
         [HttpGet("list")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -56,6 +57,7 @@ namespace Dot.Net.WebApi.Controllers
             return Ok(users);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
@@ -67,6 +69,7 @@ namespace Dot.Net.WebApi.Controllers
             return Ok(user);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UserModel userDto)
         {
@@ -78,6 +81,7 @@ namespace Dot.Net.WebApi.Controllers
             return Ok(updatedUser);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {

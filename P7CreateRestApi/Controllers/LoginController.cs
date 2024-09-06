@@ -6,6 +6,7 @@ using P7CreateRestApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Dot.Net.WebApi.Controllers
 {
@@ -15,11 +16,13 @@ namespace Dot.Net.WebApi.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<LoginController> _logger;
 
-        public LoginController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
+        public LoginController(UserManager<User> userManager, IConfiguration configuration, ILogger<LoginController> logger)
         {
-            _userManager = userManager;         
+            _userManager = userManager;
             _configuration = configuration;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -29,6 +32,8 @@ namespace Dot.Net.WebApi.Controllers
             var user = await _userManager.FindByNameAsync(model.Username);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
+                _logger.LogInformation("Connexion réussie pour l'utilisateur : {Username}", model.Username);
+
                 // Générer le token JWT
                 var authClaims = new List<Claim>
                 {
@@ -54,6 +59,7 @@ namespace Dot.Net.WebApi.Controllers
                 });
             }
 
+            _logger.LogWarning("Connexion échouée pour l'utilisateur {Username}", model.Username);
             return Unauthorized();
         }
     }

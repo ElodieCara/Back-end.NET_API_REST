@@ -15,7 +15,7 @@ namespace Dot.Net.WebApi.Services
         {
             _userManager = userManager;
         }
-
+               
         public async Task<IEnumerable<UserModel>> GetAllAsync()
         {
             var users = _userManager.Users;

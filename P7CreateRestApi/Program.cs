@@ -7,9 +7,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Microsoft.Extensions.Logging.Console;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
+
+builder.Logging.AddSimpleConsole(i => i.ColorBehavior = LoggerColorBehavior.Disabled);
+
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -103,6 +110,15 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
+
+app.MapGet("/Test", async (ILogger<Program> logger, HttpResponse response) =>
+{
+    logger.LogInformation("L'utilisateur s'est connecté.");
+    logger.LogWarning("Tentative de connexion échouée.");
+    logger.LogError("Erreur lors de la connexion.");
+    await response.WriteAsync("Testing");
+});
+
 
 // Créer les rôles par défaut si nécessaire
 using (var scope = app.Services.CreateScope())
