@@ -22,6 +22,6 @@ namespace Dot.Net.WebApi.Data
         public DbSet<CurvePoint> CurvePoints { get; set; } = null!;
         public DbSet<Rating> Ratings { get; set; } = null!;
         public DbSet<RuleName> RuleNames { get; set; } = null!;
-        public DbSet<User> Users { get; set; }
+        public new DbSet<User> Users { get; set; }
     }
 }

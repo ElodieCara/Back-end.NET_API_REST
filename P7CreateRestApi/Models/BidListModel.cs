@@ -1,23 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Dot.Net.WebApi.Models
 {
     public class BidListModel
     {
+        [Key]
         public int BidListId { get; set; }
 
-        [Required]
-        [StringLength(50)]
+        [Required(ErrorMessage = "Le compte est obligatoire.")]
+        [StringLength(50, ErrorMessage = "Le compte ne peut pas dépasser 50 caractères.")]
         public string Account { get; set; }
 
+        [StringLength(50)]
         public string BidType { get; set; }
 
         public double? BidQuantity { get; set; }
-
         public double? AskQuantity { get; set; }
-
         public double? Bid { get; set; }
-
         public double? Ask { get; set; }
 
         [StringLength(100)]

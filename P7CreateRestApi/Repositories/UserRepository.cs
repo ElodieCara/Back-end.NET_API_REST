@@ -9,34 +9,34 @@ namespace Dot.Net.WebApi.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public UserRepository(UserManager<IdentityUser> userManager)
+        public UserRepository(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<IdentityUser>> GetAllAsync()
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
             return await _userManager.Users.ToListAsync();
         }
 
-        public async Task<IdentityUser> GetByUsernameAsync(string username)
+        public async Task<User> GetByUsernameAsync(string username)
         {
             return await _userManager.FindByNameAsync(username);
         }
 
-        public async Task<IdentityUser> GetByIdAsync(string id)
+        public async Task<User> GetByIdAsync(string id)
         {
             return await _userManager.FindByIdAsync(id);
         }
 
-        public async Task AddAsync(IdentityUser user, string password)
+        public async Task AddAsync(User user, string password)
         {
             await _userManager.CreateAsync(user, password);
         }
 
-        public async Task UpdateAsync(IdentityUser user)
+        public async Task UpdateAsync(User user)
         {
             await _userManager.UpdateAsync(user);
         }

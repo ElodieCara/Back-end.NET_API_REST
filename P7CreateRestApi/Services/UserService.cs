@@ -28,6 +28,22 @@ namespace Dot.Net.WebApi.Services
             });
         }
 
+        public async Task<UserModel> LoginAsync(string username, string password)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user != null && await _userManager.CheckPasswordAsync(user, password))
+            {
+                return new UserModel
+                {
+                    Id = user.Id,
+                    Username = user.UserName,
+                    Fullname = user.Fullname,
+                    Role = user.Role
+                };
+            }
+            return null;
+        }
+
         public async Task<UserModel> GetByIdAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);

@@ -44,10 +44,12 @@ namespace Dot.Net.WebApi.Controllers
             {
                 _logger.LogWarning("Unauthorized login attempt for {Username}", loginModel.Username);
                 return Unauthorized();
-            }
 
+            }
+            
             return Ok(user);
         }
+
 
         [Authorize]
         [HttpGet("list")]
