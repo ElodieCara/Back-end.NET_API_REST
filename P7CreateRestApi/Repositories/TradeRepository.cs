@@ -25,6 +25,11 @@ namespace Dot.Net.WebApi.Repositories
             return await _context.Trades.FindAsync(id);
         }
 
+        public async Task<IEnumerable<Trade>> GetTradesByUserIdAsync(string userId)
+        {
+            return await _context.Trades.Where(t => t.UserId == userId).ToListAsync();
+        }
+
         public async Task AddAsync(Trade trade)
         {
             await _context.Trades.AddAsync(trade);

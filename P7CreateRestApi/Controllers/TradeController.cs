@@ -4,6 +4,8 @@ using Dot.Net.WebApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Dot.Net.WebApi.Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace Dot.Net.WebApi.Controllers
 {
@@ -41,6 +43,20 @@ namespace Dot.Net.WebApi.Controllers
                 return NotFound();
             }
             return Ok(trade);
+        }
+
+        [HttpGet("user/{userId}")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<IEnumerable<TradeModel>>> GetTradesByUser(string userId)
+        {
+            _logger.LogInformation("Fetching trades for user with ID: {UserId}", userId);
+            var trades = await _service.GetTradesByUserIdAsync(userId);  // Appel au service
+            if (trades == null || !trades.Any())
+            {
+                _logger.LogWarning("No trades found for user with ID: {UserId}", userId);
+                return NotFound();
+            }
+            return Ok(trades);
         }
 
         [HttpPost]

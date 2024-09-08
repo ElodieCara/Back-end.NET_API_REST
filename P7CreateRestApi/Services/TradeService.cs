@@ -72,6 +72,32 @@ namespace Dot.Net.WebApi.Services
             };
         }
 
+        public async Task<IEnumerable<TradeModel>> GetTradesByUserIdAsync(string userId)
+        {
+            var trades = await _repository.GetTradesByUserIdAsync(userId);
+            return trades.Select(t => new TradeModel
+            {
+                TradeId = t.TradeId,
+                Account = t.Account,
+                BuyQuantity = t.BuyQuantity,
+                SellQuantity = t.SellQuantity,
+                BuyPrice = t.BuyPrice ?? 0.0,
+                SellPrice = t.SellPrice ?? 0.0,
+                TradeDate = t.TradeDate ?? DateTime.MinValue,
+                TradeSecurity = t.TradeSecurity,
+                TradeStatus = t.TradeStatus,
+                Trader = t.Trader,
+                Benchmark = t.Benchmark,
+                CreationDate = t.CreationDate ?? DateTime.MinValue,
+                RevisionName = t.RevisionName,
+                RevisionDate = t.RevisionDate ?? DateTime.MinValue,
+                DealName = t.DealName,
+                DealType = t.DealType,
+                SourceListId = t.SourceListId,
+                Side = t.Side
+            });
+        }
+
         public async Task<TradeModel> AddAsync(TradeModel dto)
         {
             var trade = new Trade

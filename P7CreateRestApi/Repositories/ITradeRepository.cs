@@ -11,5 +11,7 @@ namespace Dot.Net.WebApi.Repositories
         Task AddAsync(Trade entity);
         Task UpdateAsync(Trade entity);
         Task DeleteAsync(int id);
+        // Nouvelle méthode pour récupérer les trades d'un utilisateur
+        Task<IEnumerable<Trade>> GetTradesByUserIdAsync(string userId);
     }
 }

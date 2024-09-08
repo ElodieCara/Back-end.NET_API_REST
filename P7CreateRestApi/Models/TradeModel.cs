@@ -1,5 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Dot.Net.WebApi.Domain;
+
 
 namespace Dot.Net.WebApi.Models
 {
@@ -16,57 +17,61 @@ namespace Dot.Net.WebApi.Models
         [StringLength(50, ErrorMessage = "Le type de compte ne peut pas dépasser 50 caractères.")]
         public string AccountType { get; set; }
 
-        [Range(0, double.MaxValue, ErrorMessage = "La quantité d'achat doit être positive.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "La quantité d'achat doit être supérieure à 0.")]
         public double? BuyQuantity { get; set; }
 
-        [Range(0, double.MaxValue, ErrorMessage = "La quantité de vente doit être positive.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "La quantité de vente doit être supérieure à 0.")]
         public double? SellQuantity { get; set; }
 
-        [Range(0, double.MaxValue, ErrorMessage = "Le prix d'achat doit être positif.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Le prix d'achat doit être supérieur à 0.")]
         public double? BuyPrice { get; set; }
 
-        [Range(0, double.MaxValue, ErrorMessage = "Le prix de vente doit être positif.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Le prix de vente doit être supérieur à 0.")]
         public double? SellPrice { get; set; }
 
+        [DataType(DataType.DateTime)]
         public DateTime? TradeDate { get; set; }
 
-        [StringLength(100, ErrorMessage = "La sécurité de l'échange ne peut pas dépasser 100 caractères.")]
+        [StringLength(100)]
         public string TradeSecurity { get; set; }
 
-        [StringLength(50, ErrorMessage = "Le statut ne peut pas dépasser 50 caractères.")]
+        [StringLength(50)]
         public string TradeStatus { get; set; }
 
-        [StringLength(100, ErrorMessage = "Le nom du trader ne peut pas dépasser 100 caractères.")]
+        [StringLength(100)]
         public string Trader { get; set; }
 
-        [StringLength(100, ErrorMessage = "La référence ne peut pas dépasser 100 caractères.")]
+        [StringLength(100)]
         public string Benchmark { get; set; }
 
-        [StringLength(50, ErrorMessage = "Le nom du livre ne peut pas dépasser 50 caractères.")]
+        [StringLength(50)]
         public string Book { get; set; }
 
-        [StringLength(50, ErrorMessage = "Le nom du créateur ne peut pas dépasser 50 caractères.")]
+        [StringLength(50)]
         public string CreationName { get; set; }
 
         public DateTime? CreationDate { get; set; }
 
-        [StringLength(50, ErrorMessage = "Le nom du réviseur ne peut pas dépasser 50 caractères.")]
+        [StringLength(50)]
         public string RevisionName { get; set; }
 
         public DateTime? RevisionDate { get; set; }
 
-        [StringLength(100, ErrorMessage = "Le nom de l'affaire ne peut pas dépasser 100 caractères.")]
+        [StringLength(100)]
         public string DealName { get; set; }
 
-        [StringLength(50, ErrorMessage = "Le type d'affaire ne peut pas dépasser 50 caractères.")]
+        [StringLength(50)]
         public string DealType { get; set; }
 
-        [StringLength(50, ErrorMessage = "L'ID de la liste source ne peut pas dépasser 50 caractères.")]
+        [StringLength(50)]
         public string SourceListId { get; set; }
 
-        [StringLength(10, ErrorMessage = "Le côté ne peut pas dépasser 10 caractères.")]
+        [StringLength(10)]
         public string Side { get; set; }
 
-        // Relation possible avec User ou autre entité
+        // Relation avec User
+        public string UserId { get; set; }
+        public User User { get; set; }
     }
 }
+

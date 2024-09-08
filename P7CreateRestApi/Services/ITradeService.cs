@@ -11,5 +11,8 @@ namespace Dot.Net.WebApi.Services
         Task<TradeModel> AddAsync(TradeModel dto);
         Task<TradeModel> UpdateAsync(int id, TradeModel dto);
         Task DeleteAsync(int id);
+
+        // Nouvelle méthode pour récupérer les trades par userId
+        Task<IEnumerable<TradeModel>> GetTradesByUserIdAsync(string userId);
     }
 }

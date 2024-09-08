@@ -57,7 +57,13 @@ namespace Dot.Net.WebApi.Services
                 Role = user.Role // Ajouter Role
             };
         }
+        public async Task<IEnumerable<Trade>> GetUserTradesAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
 
+            // Renvoie la liste des transactions liées à l'utilisateur
+            return user?.Trades ?? new List<Trade>();  // Si aucune transaction, renvoie une liste vide
+        }
         public async Task<UserModel> AddAsync(UserModel dto, string password)
         {
             var user = new User
