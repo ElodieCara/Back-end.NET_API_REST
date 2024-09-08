@@ -13,9 +13,9 @@ namespace Dot.Net.WebApi.Controllers
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
-    {        
+    {
         private readonly IUserService _userService;
-        private readonly ILogger <UserController> _logger;
+        private readonly ILogger<UserController> _logger;
 
         public UserController(IUserService userService, ILogger<UserController> logger)
         {
@@ -44,12 +44,45 @@ namespace Dot.Net.WebApi.Controllers
             {
                 _logger.LogWarning("Unauthorized login attempt for {Username}", loginModel.Username);
                 return Unauthorized();
-
             }
-            
+
             return Ok(user);
         }
 
+        // Suppression de l'utilisateur (Droit à l'oubli)
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userService.GetByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            await _userService.DeleteAsync(id);  // Suppression des données
+            return NoContent();
+        }
+
+        // Méthode pour anonymiser les données utilisateur
+        [Authorize]
+        [HttpPut("anonymize/{id}")]
+        public async Task<IActionResult> AnonymizeUser(string id)
+        {
+            var user = await _userService.GetByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Anonymisation des données
+            user.Fullname = "Anonymous";
+            user.Username = "anonymous_user";
+            // Ajoute d'autres propriétés à anonymiser si nécessaire
+
+            await _userService.UpdateAsync(id, user);
+            return Ok();
+        }
 
         [Authorize]
         [HttpGet("list")]
@@ -81,14 +114,6 @@ namespace Dot.Net.WebApi.Controllers
                 return NotFound();
             }
             return Ok(updatedUser);
-        }
-
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
-        {
-            await _userService.DeleteAsync(id);
-            return NoContent();
         }
     }
 }
