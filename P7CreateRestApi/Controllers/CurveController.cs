@@ -1,21 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using Dot.Net.WebApi.Services;
-using Dot.Net.WebApi.Models;
+using Microsoft.Extensions.Logging;
+using P7CreateRestApi.Models.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
 
 namespace Dot.Net.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CurveController : ControllerBase
+    public class CurvePointController : ControllerBase
     {
         private readonly ICurvePointService _service;
-        private readonly ILogger<CurveController> _logger;
+        private readonly ILogger<CurvePointController> _logger;
 
-        public CurveController(ICurvePointService service, ILogger<CurveController> logger)
+        public CurvePointController(ICurvePointService service, ILogger<CurvePointController> logger)
         {
             _service = service;
             _logger = logger;
@@ -23,22 +23,22 @@ namespace Dot.Net.WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,User")]
-        public async Task<ActionResult<IEnumerable<CurvePointModel>>> GetAllCurvePoints()
+        public async Task<ActionResult<IEnumerable<CurvePointDto>>> GetAllCurvePoints()
         {
-            _logger.LogInformation("Récupération de tous les CurvePoint.");
+            _logger.LogInformation("Fetching all curve points.");
             var curvePoints = await _service.GetAllAsync();
             return Ok(curvePoints);
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,User")]
-        public async Task<ActionResult<CurvePointModel>> GetCurvePoint(int id)
+        public async Task<ActionResult<CurvePointDto>> GetCurvePoint(int id)
         {
-            _logger.LogInformation("Récupération du CurvePoint avec ID : {Id}", id);
+            _logger.LogInformation("Fetching curve point with ID: {id}", id);
             var curvePoint = await _service.GetByIdAsync(id);
             if (curvePoint == null)
             {
-                _logger.LogWarning("CurvePoint avec ID : {Id} non trouvé.", id);
+                _logger.LogWarning("Curve point with ID: {id} not found", id);
                 return NotFound();
             }
             return Ok(curvePoint);
@@ -46,40 +46,36 @@ namespace Dot.Net.WebApi.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<CurvePointModel>> AddCurvePoint(CurvePointModel curvePointDTO)
+        public async Task<ActionResult<CurvePointDto>> AddCurvePoint([FromBody] CurvePointDto curvePointDto)
         {
             if (ModelState.IsValid)
             {
-                _logger.LogInformation("Ajout d'un nouveau CurvePoint.");
-                var newCurvePoint = await _service.AddAsync(curvePointDTO);
+                _logger.LogInformation("Adding new curve point.");
+                var newCurvePoint = await _service.AddAsync(curvePointDto);
                 return CreatedAtAction(nameof(GetCurvePoint), new { id = newCurvePoint.Id }, newCurvePoint);
             }
-            _logger.LogWarning("Échec de la validation du modèle lors de l'ajout d'un CurvePoint.");
+
+            _logger.LogError("Invalid model state while adding a curve point.");
             return BadRequest(ModelState);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateCurvePoint(int id, CurvePointModel curvePointDTO)
+        public async Task<IActionResult> UpdateCurvePoint(int id, [FromBody] CurvePointDto curvePointDto)
         {
-            if (id != curvePointDTO.Id)
-            {
-                _logger.LogWarning("Échec de la mise à jour : les ID ne correspondent pas.");
-                return BadRequest();
-            }
-
             if (ModelState.IsValid)
             {
-                _logger.LogInformation("Mise à jour du CurvePoint avec ID : {Id}", id);
-                var updatedCurvePoint = await _service.UpdateAsync(id, curvePointDTO);
+                _logger.LogInformation("Updating curve point with ID: {id}", id);
+                var updatedCurvePoint = await _service.UpdateAsync(id, curvePointDto);
                 if (updatedCurvePoint == null)
                 {
-                    _logger.LogWarning("CurvePoint avec ID : {Id} non trouvé.", id);
+                    _logger.LogWarning("Curve point with ID: {id} not found for update", id);
                     return NotFound();
                 }
                 return NoContent();
             }
-            _logger.LogWarning("Échec de la validation du modèle lors de la mise à jour d'un CurvePoint.");
+
+            _logger.LogError("Invalid model state while updating a curve point.");
             return BadRequest(ModelState);
         }
 
@@ -87,13 +83,14 @@ namespace Dot.Net.WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCurvePoint(int id)
         {
-            _logger.LogInformation("Suppression du CurvePoint avec ID : {Id}", id);
+            _logger.LogInformation("Deleting curve point with ID: {id}", id);
             var curvePoint = await _service.GetByIdAsync(id);
             if (curvePoint == null)
             {
-                _logger.LogWarning("CurvePoint avec ID : {Id} non trouvé pour suppression.", id);
+                _logger.LogWarning("Curve point with ID: {id} not found for deletion", id);
                 return NotFound();
             }
+
             await _service.DeleteAsync(id);
             return NoContent();
         }

@@ -9,8 +9,8 @@ namespace Dot.Net.WebApi.Services
         Task<IEnumerable<UserModel>> GetAllAsync();
         Task<UserModel> LoginAsync(string username, string password);
         Task<UserModel> GetByIdAsync(string id);
-        Task<UserModel> AddAsync(UserModel dto, string password);
-        Task<UserModel> UpdateAsync(string id, UserModel dto);
+        Task<UserModel> AddAsync(UserModel userModel, string password);
+        Task<UserModel> UpdateAsync(string id, UserModel userModel);
         Task DeleteAsync(string id);
     }
 }

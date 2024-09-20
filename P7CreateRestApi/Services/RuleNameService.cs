@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using P7CreateRestApi.Models.DTOs;
 using Dot.Net.WebApi.Models;
 using Dot.Net.WebApi.Domain;
 using Dot.Net.WebApi.Repositories;
-using System.Data;
 
 namespace Dot.Net.WebApi.Services
 {
@@ -17,10 +17,11 @@ namespace Dot.Net.WebApi.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<RuleNameModel>> GetAllAsync()
+        // Le service retourne des DTOs pour être compatible avec le contrôleur
+        public async Task<IEnumerable<RuleNameDto>> GetAllAsync()
         {
             var rules = await _repository.GetAllAsync();
-            return rules.Select(r => new RuleNameModel
+            return rules.Select(r => new RuleNameDto
             {
                 Id = r.Id,
                 Name = r.Name,
@@ -32,14 +33,14 @@ namespace Dot.Net.WebApi.Services
             });
         }
 
-        public async Task<RuleNameModel> GetByIdAsync(int id)
+        public async Task<RuleNameDto> GetByIdAsync(int id)
         {
             var rule = await _repository.GetByIdAsync(id);
             if (rule == null)
             {
                 return null!;
             }
-            return new RuleNameModel
+            return new RuleNameDto
             {
                 Id = rule.Id,
                 Name = rule.Name,
@@ -51,7 +52,7 @@ namespace Dot.Net.WebApi.Services
             };
         }
 
-        public async Task<RuleNameModel> AddAsync(RuleNameModel dto)
+        public async Task<RuleNameDto> AddAsync(RuleNameDto dto)
         {
             var ruleName = new RuleName
             {
@@ -67,7 +68,7 @@ namespace Dot.Net.WebApi.Services
             return dto;
         }
 
-        public async Task<RuleNameModel> UpdateAsync(int id, RuleNameModel dto)
+        public async Task<RuleNameDto> UpdateAsync(int id, RuleNameDto dto)
         {
             var rule = await _repository.GetByIdAsync(id);
             if (rule == null)

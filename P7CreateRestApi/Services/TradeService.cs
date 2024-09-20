@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dot.Net.WebApi.Models;
-using Dot.Net.WebApi.Domain;
+using P7CreateRestApi.Models.DTOs;
 using Dot.Net.WebApi.Repositories;
+using Dot.Net.WebApi.Domain;
 
 namespace Dot.Net.WebApi.Services
 {
@@ -16,55 +16,57 @@ namespace Dot.Net.WebApi.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<TradeModel>> GetAllAsync()
+        public async Task<IEnumerable<TradeDto>> GetAllAsync()
         {
             var trades = await _repository.GetAllAsync();
-            return trades.Select(t => new TradeModel
+            return trades.Select(t => new TradeDto
             {
                 TradeId = t.TradeId,
                 Account = t.Account,
                 AccountType = t.AccountType,
-                BuyQuantity = t.BuyQuantity ?? 0.0,
-                SellQuantity = t.SellQuantity ?? 0.0,
-                BuyPrice = t.BuyPrice ?? 0.0,
-                SellPrice = t.SellPrice ?? 0.0,
-                TradeDate = t.TradeDate ?? DateTime.MinValue,
+                BuyQuantity = t.BuyQuantity,
+                SellQuantity = t.SellQuantity,
+                BuyPrice = t.BuyPrice,
+                SellPrice = t.SellPrice,
+                TradeDate = t.TradeDate,
                 TradeSecurity = t.TradeSecurity,
                 TradeStatus = t.TradeStatus,
                 Trader = t.Trader,
                 Benchmark = t.Benchmark,
-                CreationDate = t.CreationDate ?? DateTime.MinValue,
+                CreationName = t.CreationName,
+                CreationDate = t.CreationDate,
                 RevisionName = t.RevisionName,
-                RevisionDate = t.RevisionDate ?? DateTime.MinValue,
+                RevisionDate = t.RevisionDate,
                 DealName = t.DealName,
                 DealType = t.DealType,
                 SourceListId = t.SourceListId,
                 Side = t.Side
-            });
+            }).ToList();
         }
 
-        public async Task<TradeModel> GetByIdAsync(int id)
+        public async Task<TradeDto> GetByIdAsync(int id)
         {
             var trade = await _repository.GetByIdAsync(id);
             if (trade == null) return null!;
 
-            return new TradeModel
+            return new TradeDto
             {
                 TradeId = trade.TradeId,
                 Account = trade.Account,
                 AccountType = trade.AccountType,
-                BuyQuantity = trade.BuyQuantity ?? 0.0,
-                SellQuantity = trade.SellQuantity ?? 0.0,
-                BuyPrice = trade.BuyPrice ?? 0.0,
-                SellPrice = trade.SellPrice ?? 0.0,
-                TradeDate = trade.TradeDate ?? DateTime.MinValue,
+                BuyQuantity = trade.BuyQuantity,
+                SellQuantity = trade.SellQuantity,
+                BuyPrice = trade.BuyPrice,
+                SellPrice = trade.SellPrice,
+                TradeDate = trade.TradeDate,
                 TradeSecurity = trade.TradeSecurity,
                 TradeStatus = trade.TradeStatus,
                 Trader = trade.Trader,
                 Benchmark = trade.Benchmark,
-                CreationDate = trade.CreationDate ?? DateTime.MinValue,
+                CreationName = trade.CreationName,
+                CreationDate = trade.CreationDate,
                 RevisionName = trade.RevisionName,
-                RevisionDate = trade.RevisionDate ?? DateTime.MinValue,
+                RevisionDate = trade.RevisionDate,
                 DealName = trade.DealName,
                 DealType = trade.DealType,
                 SourceListId = trade.SourceListId,
@@ -72,33 +74,34 @@ namespace Dot.Net.WebApi.Services
             };
         }
 
-        public async Task<IEnumerable<TradeModel>> GetTradesByUserIdAsync(string userId)
+        public async Task<IEnumerable<TradeDto>> GetTradesByUserIdAsync(string userId)
         {
             var trades = await _repository.GetTradesByUserIdAsync(userId);
-            return trades.Select(t => new TradeModel
+            return trades.Select(t => new TradeDto
             {
                 TradeId = t.TradeId,
                 Account = t.Account,
                 BuyQuantity = t.BuyQuantity,
                 SellQuantity = t.SellQuantity,
-                BuyPrice = t.BuyPrice ?? 0.0,
-                SellPrice = t.SellPrice ?? 0.0,
-                TradeDate = t.TradeDate ?? DateTime.MinValue,
+                BuyPrice = t.BuyPrice,
+                SellPrice = t.SellPrice,
+                TradeDate = t.TradeDate,
                 TradeSecurity = t.TradeSecurity,
                 TradeStatus = t.TradeStatus,
                 Trader = t.Trader,
                 Benchmark = t.Benchmark,
-                CreationDate = t.CreationDate ?? DateTime.MinValue,
+                CreationName = t.CreationName,
+                CreationDate = t.CreationDate,
                 RevisionName = t.RevisionName,
-                RevisionDate = t.RevisionDate ?? DateTime.MinValue,
+                RevisionDate = t.RevisionDate,
                 DealName = t.DealName,
                 DealType = t.DealType,
                 SourceListId = t.SourceListId,
                 Side = t.Side
-            });
+            }).ToList();
         }
 
-        public async Task<TradeModel> AddAsync(TradeModel dto)
+        public async Task<TradeDto> AddAsync(TradeDto dto)
         {
             var trade = new Trade
             {
@@ -113,6 +116,7 @@ namespace Dot.Net.WebApi.Services
                 TradeStatus = dto.TradeStatus,
                 Trader = dto.Trader,
                 Benchmark = dto.Benchmark,
+                CreationName = dto.CreationName,
                 CreationDate = dto.CreationDate,
                 RevisionName = dto.RevisionName,
                 RevisionDate = dto.RevisionDate,
@@ -127,7 +131,7 @@ namespace Dot.Net.WebApi.Services
             return dto;
         }
 
-        public async Task<TradeModel> UpdateAsync(int id, TradeModel dto)
+        public async Task<TradeDto> UpdateAsync(int id, TradeDto dto)
         {
             var trade = await _repository.GetByIdAsync(id);
             if (trade == null) return null!;
@@ -143,6 +147,7 @@ namespace Dot.Net.WebApi.Services
             trade.TradeStatus = dto.TradeStatus;
             trade.Trader = dto.Trader;
             trade.Benchmark = dto.Benchmark;
+            trade.CreationName = dto.CreationName;
             trade.CreationDate = dto.CreationDate;
             trade.RevisionName = dto.RevisionName;
             trade.RevisionDate = dto.RevisionDate;

@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Dot.Net.WebApi.Services;
-using Dot.Net.WebApi.Models;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Dot.Net.WebApi.Domain;
-using Microsoft.AspNetCore.Identity;
+using P7CreateRestApi.Models.DTOs;
 
 namespace Dot.Net.WebApi.Controllers
 {
@@ -24,76 +23,60 @@ namespace Dot.Net.WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,User")]
-        public async Task<ActionResult<IEnumerable<TradeModel>>> GetAllTrades()
+        public async Task<ActionResult<IEnumerable<TradeDto>>> GetAllTrades()
         {
-            _logger.LogInformation("Fetching all trades");
+            _logger.LogInformation("Fetching all trades.");
             var trades = await _service.GetAllAsync();
             return Ok(trades);
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,User")]
-        public async Task<ActionResult<TradeModel>> GetTrade(int id)
+        public async Task<ActionResult<TradeDto>> GetTrade(int id)
         {
             _logger.LogInformation("Fetching trade with ID: {TradeId}", id);
             var trade = await _service.GetByIdAsync(id);
             if (trade == null)
             {
-                _logger.LogWarning("Trade with ID: {TradeId} not found", id);
+                _logger.LogWarning("Trade with ID: {TradeId} not found.", id);
                 return NotFound();
             }
-            return Ok(trade);
-        }
 
-        [HttpGet("user/{userId}")]
-        [Authorize(Roles = "Admin,User")]
-        public async Task<ActionResult<IEnumerable<TradeModel>>> GetTradesByUser(string userId)
-        {
-            _logger.LogInformation("Fetching trades for user with ID: {UserId}", userId);
-            var trades = await _service.GetTradesByUserIdAsync(userId);  // Appel au service
-            if (trades == null || !trades.Any())
-            {
-                _logger.LogWarning("No trades found for user with ID: {UserId}", userId);
-                return NotFound();
-            }
-            return Ok(trades);
+            return Ok(trade);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<TradeModel>> AddTrade(TradeModel tradeDTO)
+        public async Task<ActionResult<TradeDto>> AddTrade([FromBody] TradeDto tradeDto)
         {
             if (ModelState.IsValid)
             {
-                _logger.LogInformation("Adding a new trade");
-                var newTrade = await _service.AddAsync(tradeDTO);
+                _logger.LogInformation("Adding new trade.");
+                var newTrade = await _service.AddAsync(tradeDto);
                 return CreatedAtAction(nameof(GetTrade), new { id = newTrade.TradeId }, newTrade);
             }
-            _logger.LogError("Invalid model state while adding a trade");
+
+            _logger.LogError("Invalid model state while adding a trade.");
             return BadRequest(ModelState);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateTrade(int id, TradeModel tradeDTO)
+        public async Task<IActionResult> UpdateTrade(int id, [FromBody] TradeDto tradeDto)
         {
-            if (id != tradeDTO.TradeId)
-            {
-                _logger.LogWarning("Trade ID mismatch: {TradeId}", id);
-                return BadRequest();
-            }
-
             if (ModelState.IsValid)
             {
                 _logger.LogInformation("Updating trade with ID: {TradeId}", id);
-                var updatedTrade = await _service.UpdateAsync(id, tradeDTO);
+                var updatedTrade = await _service.UpdateAsync(id, tradeDto);
                 if (updatedTrade == null)
                 {
-                    _logger.LogWarning("Trade with ID: {TradeId} not found for update", id);
+                    _logger.LogWarning("Trade with ID: {TradeId} not found.", id);
                     return NotFound();
                 }
+
                 return NoContent();
             }
+
             _logger.LogError("Invalid model state while updating trade with ID: {TradeId}", id);
             return BadRequest(ModelState);
         }
@@ -106,9 +89,10 @@ namespace Dot.Net.WebApi.Controllers
             var trade = await _service.GetByIdAsync(id);
             if (trade == null)
             {
-                _logger.LogWarning("Trade with ID: {TradeId} not found for deletion", id);
+                _logger.LogWarning("Trade with ID: {TradeId} not found.", id);
                 return NotFound();
             }
+
             await _service.DeleteAsync(id);
             return NoContent();
         }

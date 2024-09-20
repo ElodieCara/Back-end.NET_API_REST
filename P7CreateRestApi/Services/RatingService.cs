@@ -19,6 +19,7 @@ namespace Dot.Net.WebApi.Services
         public async Task<IEnumerable<RatingModel>> GetAllAsync()
         {
             var ratings = await _repository.GetAllAsync();
+            // Convertir la liste de Rating en RatingModel pour la couche service
             return ratings.Select(r => new RatingModel
             {
                 Id = r.Id,
@@ -36,6 +37,8 @@ namespace Dot.Net.WebApi.Services
             {
                 return null!;
             }
+
+            // Convertir Rating en RatingModel
             return new RatingModel
             {
                 Id = rating.Id,
@@ -48,12 +51,13 @@ namespace Dot.Net.WebApi.Services
 
         public async Task<RatingModel> AddAsync(RatingModel dto)
         {
+            // Convertir RatingModel en Rating pour le stockage
             var rating = new Rating
             {
                 MoodysRating = dto.MoodysRating,
                 SandPRating = dto.SandPRating,
                 FitchRating = dto.FitchRating,
-                OrderNumber = (byte?)dto.OrderNumber
+                OrderNumber = dto.OrderNumber
             };
             await _repository.AddAsync(rating);
             dto.Id = rating.Id;
@@ -68,10 +72,11 @@ namespace Dot.Net.WebApi.Services
                 return null!;
             }
 
+            // Mise à jour des propriétés de l'entité Rating
             rating.MoodysRating = dto.MoodysRating;
             rating.SandPRating = dto.SandPRating;
             rating.FitchRating = dto.FitchRating;
-            rating.OrderNumber = (byte?)dto.OrderNumber;
+            rating.OrderNumber = dto.OrderNumber;
 
             await _repository.UpdateAsync(rating);
 

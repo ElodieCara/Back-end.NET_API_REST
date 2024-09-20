@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dot.Net.WebApi.Models;
+using P7CreateRestApi.Models.DTOs;
 
 namespace Dot.Net.WebApi.Services
 {
     public interface ITradeService
     {
-        Task<IEnumerable<TradeModel>> GetAllAsync();
-        Task<TradeModel> GetByIdAsync(int id);
-        Task<TradeModel> AddAsync(TradeModel dto);
-        Task<TradeModel> UpdateAsync(int id, TradeModel dto);
+        Task<IEnumerable<TradeDto>> GetAllAsync();
+        Task<TradeDto> GetByIdAsync(int id);
+        Task<TradeDto> AddAsync(TradeDto dto);
+        Task<TradeDto> UpdateAsync(int id, TradeDto dto);
         Task DeleteAsync(int id);
 
         // Nouvelle méthode pour récupérer les trades par userId
-        Task<IEnumerable<TradeModel>> GetTradesByUserIdAsync(string userId);
+        Task<IEnumerable<TradeDto>> GetTradesByUserIdAsync(string userId);
     }
 }

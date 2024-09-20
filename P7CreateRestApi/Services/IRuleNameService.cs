@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dot.Net.WebApi.Models;
+using P7CreateRestApi.Models.DTOs;
 
 namespace Dot.Net.WebApi.Services
 {
     public interface IRuleNameService
     {
-        Task<IEnumerable<RuleNameModel>> GetAllAsync();
-        Task<RuleNameModel> GetByIdAsync(int id);
-        Task<RuleNameModel> AddAsync(RuleNameModel dto);
-        Task<RuleNameModel> UpdateAsync(int id, RuleNameModel dto);
+        Task<IEnumerable<RuleNameDto>> GetAllAsync();
+        Task<RuleNameDto> GetByIdAsync(int id);
+        Task<RuleNameDto> AddAsync(RuleNameDto dto);
+        Task<RuleNameDto> UpdateAsync(int id, RuleNameDto dto);
         Task DeleteAsync(int id);
     }
 }

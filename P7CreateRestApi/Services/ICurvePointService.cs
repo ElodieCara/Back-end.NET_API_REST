@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dot.Net.WebApi.Models;
+using P7CreateRestApi.Models.DTOs;
 
 namespace Dot.Net.WebApi.Services
 {
     public interface ICurvePointService
     {
-        Task<IEnumerable<CurvePointModel>> GetAllAsync();
-        Task<CurvePointModel> GetByIdAsync(int id);
-        Task<CurvePointModel> AddAsync(CurvePointModel dto);
-        Task<CurvePointModel> UpdateAsync(int id, CurvePointModel dto);
+        Task<IEnumerable<CurvePointDto>> GetAllAsync();
+        Task<CurvePointDto> GetByIdAsync(int id);
+        Task<CurvePointDto> AddAsync(CurvePointDto dto);
+        Task<CurvePointDto> UpdateAsync(int id, CurvePointDto dto);
         Task DeleteAsync(int id);
     }
 }

@@ -19,12 +19,6 @@ builder.Logging.AddSimpleConsole(i => i.ColorBehavior = LoggerColorBehavior.Disa
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-// Configuration de l'Antiforgery avant la construction de l'application
-builder.Services.AddAntiforgery(options =>
-{
-    options.HeaderName = "X-XSRF-TOKEN";
-});
-
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -144,38 +138,11 @@ app.MapGet("/Test", async (ILogger<Program> logger, HttpResponse response) =>
 });
 
 
-// Créer les rôles par défaut si nécessaire
+// Appel à la méthode pour créer les rôles et l'utilisateur admin
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-
-    string[] roleNames = { "Admin", "User" };
-    foreach (var roleName in roleNames)
-    {
-        if (!await roleManager.RoleExistsAsync(roleName))
-        {
-            await roleManager.CreateAsync(new IdentityRole(roleName));
-        }
-    }
-    // Create default admin user
-    if (await userManager.FindByNameAsync("admin") == null)
-    {
-        var user = new User
-        {
-            UserName = "admin",
-            Email = "admin@example.com",
-            Fullname = "Admin User", // Ajouter Fullname
-            Role = "Admin" // Ajouter Role
-        };
-
-        var result = await userManager.CreateAsync(user, "Password123!");
-
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(user, "Admin");
-        }
-    }
+    var serviceProvider = scope.ServiceProvider;
+    await IdentitySeedData.SeedRolesAndAdminUserAsync(serviceProvider);
 }
 
 app.UseCors();

@@ -2,16 +2,16 @@ using Dot.Net.WebApi.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using P7CreateRestApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using P7CreateRestApi.Models;
 
 namespace Dot.Net.WebApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
@@ -27,12 +27,12 @@ namespace Dot.Net.WebApi.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-            var user = await _userManager.FindByNameAsync(model.Username);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            var user = await _userManager.FindByNameAsync(loginModel.Username);
+            if (user != null && await _userManager.CheckPasswordAsync(user, loginModel.Password))
             {
-                _logger.LogInformation("Connexion réussie pour l'utilisateur : {Username}", model.Username);
+                _logger.LogInformation("Connexion réussie pour l'utilisateur : {Username}", loginModel.Username);
 
                 // Générer le token JWT
                 var authClaims = new List<Claim>
@@ -59,7 +59,7 @@ namespace Dot.Net.WebApi.Controllers
                 });
             }
 
-            _logger.LogWarning("Connexion échouée pour l'utilisateur {Username}", model.Username);
+            _logger.LogWarning("Connexion échouée pour l'utilisateur {Username}", loginModel.Username);
             return Unauthorized();
         }
     }

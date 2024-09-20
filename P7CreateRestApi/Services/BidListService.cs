@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dot.Net.WebApi.Models;
 using Dot.Net.WebApi.Domain;
+using Dot.Net.WebApi.Models;
 using Dot.Net.WebApi.Repositories;
+using P7CreateRestApi.Models.DTOs;
 
 namespace Dot.Net.WebApi.Services
 {
@@ -16,10 +17,10 @@ namespace Dot.Net.WebApi.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<BidListModel>> GetAllAsync()
+        public async Task<IEnumerable<BidListDto>> GetAllAsync()
         {
             var bidLists = await _repository.GetAllAsync();
-            return bidLists.Select(b => new BidListModel
+            return bidLists.Select(b => new BidListDto
             {
                 BidListId = b.BidListId,
                 Account = b.Account,
@@ -43,17 +44,17 @@ namespace Dot.Net.WebApi.Services
                 DealType = b.DealType,
                 SourceListId = b.SourceListId,
                 Side = b.Side
-            });
+            }).ToList();
         }
 
-        public async Task<BidListModel> GetByIdAsync(int id)
+        public async Task<BidListDto> GetByIdAsync(int id)
         {
             var bidList = await _repository.GetByIdAsync(id);
             if (bidList == null)
             {
                 return null;
             }
-            return new BidListModel
+            return new BidListDto
             {
                 BidListId = bidList.BidListId,
                 Account = bidList.Account,
@@ -80,7 +81,7 @@ namespace Dot.Net.WebApi.Services
             };
         }
 
-        public async Task<BidListModel> AddAsync(BidListModel dto)
+        public async Task<BidListDto> AddAsync(BidListDto dto)
         {
             var bidList = new BidList
             {
@@ -111,7 +112,7 @@ namespace Dot.Net.WebApi.Services
             return dto;
         }
 
-        public async Task<BidListModel> UpdateAsync(int id, BidListModel dto)
+        public async Task<BidListDto> UpdateAsync(int id, BidListDto dto)
         {
             var bidList = await _repository.GetByIdAsync(id);
             if (bidList == null)

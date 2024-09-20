@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dot.Net.WebApi.Models;
+using P7CreateRestApi.Models.DTOs;
 
 namespace Dot.Net.WebApi.Services
 {
     public interface IBidListService
     {
-        Task<IEnumerable<BidListModel>> GetAllAsync();
-        Task<BidListModel> GetByIdAsync(int id);
-        Task<BidListModel> AddAsync(BidListModel dto);
-        Task<BidListModel> UpdateAsync(int id, BidListModel dto);
+        Task<IEnumerable<BidListDto>> GetAllAsync();
+        Task<BidListDto> GetByIdAsync(int id);
+        Task<BidListDto> AddAsync(BidListDto dto);
+        Task<BidListDto> UpdateAsync(int id, BidListDto dto);
         Task DeleteAsync(int id);
     }
 }

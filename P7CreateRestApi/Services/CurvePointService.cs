@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dot.Net.WebApi.Models;
-using Dot.Net.WebApi.Domain;
+using P7CreateRestApi.Models.DTOs;
 using Dot.Net.WebApi.Repositories;
+using Dot.Net.WebApi.Domain;
 
 namespace Dot.Net.WebApi.Services
 {
@@ -16,27 +16,27 @@ namespace Dot.Net.WebApi.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<CurvePointModel>> GetAllAsync()
+        public async Task<IEnumerable<CurvePointDto>> GetAllAsync()
         {
             var curvePoints = await _repository.GetAllAsync();
-            return curvePoints.Select(cp => new CurvePointModel
+            return curvePoints.Select(cp => new CurvePointDto
             {
                 Id = cp.Id,
                 CurveId = cp.CurveId,
                 AsOfDate = cp.AsOfDate,
                 Term = cp.Term,
                 CurvePointValue = cp.CurvePointValue
-            });
+            }).ToList();
         }
 
-        public async Task<CurvePointModel> GetByIdAsync(int id)
+        public async Task<CurvePointDto> GetByIdAsync(int id)
         {
             var curvePoint = await _repository.GetByIdAsync(id);
             if (curvePoint == null)
             {
                 return null!;
             }
-            return new CurvePointModel
+            return new CurvePointDto
             {
                 Id = curvePoint.Id,
                 CurveId = curvePoint.CurveId,
@@ -46,7 +46,7 @@ namespace Dot.Net.WebApi.Services
             };
         }
 
-        public async Task<CurvePointModel> AddAsync(CurvePointModel dto)
+        public async Task<CurvePointDto> AddAsync(CurvePointDto dto)
         {
             var curvePoint = new CurvePoint
             {
@@ -60,7 +60,7 @@ namespace Dot.Net.WebApi.Services
             return dto;
         }
 
-        public async Task<CurvePointModel> UpdateAsync(int id, CurvePointModel dto)
+        public async Task<CurvePointDto> UpdateAsync(int id, CurvePointDto dto)
         {
             var curvePoint = await _repository.GetByIdAsync(id);
             if (curvePoint == null)
