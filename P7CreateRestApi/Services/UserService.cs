@@ -4,16 +4,19 @@ using System.Threading.Tasks;
 using Dot.Net.WebApi.Domain;
 using Dot.Net.WebApi.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Dot.Net.WebApi.Services
 {
     public class UserService : IUserService
     {
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(UserManager<User> userManager)
+        public UserService(UserManager<User> userManager, ILogger<UserService> logger)
         {
             _userManager = userManager;
+            _logger = logger;
         }
                
         public async Task<IEnumerable<UserModel>> GetAllAsync()
@@ -21,7 +24,6 @@ namespace Dot.Net.WebApi.Services
             var users = _userManager.Users;
             return users.Select(u => new UserModel
             {
-                Id = u.Id,
                 Username = u.UserName,
                 Fullname = u.Fullname, // Ajouter Fullname
                 Role = u.Role // Ajouter Role
@@ -35,7 +37,6 @@ namespace Dot.Net.WebApi.Services
             {
                 return new UserModel
                 {
-                    Id = user.Id,
                     Username = user.UserName,
                     Fullname = user.Fullname,
                     Role = user.Role
@@ -51,7 +52,6 @@ namespace Dot.Net.WebApi.Services
 
             return new UserModel
             {
-                Id = user.Id,
                 Username = user.UserName,
                 Fullname = user.Fullname, // Ajouter Fullname
                 Role = user.Role // Ajouter Role
@@ -68,8 +68,7 @@ namespace Dot.Net.WebApi.Services
         {
             var user = new User
             {
-                UserName = dto.Username,
-                Email = dto.Username,
+                UserName = dto.Username,                
                 Fullname = dto.Fullname,
                 Role = dto.Role
             };
@@ -78,12 +77,16 @@ namespace Dot.Net.WebApi.Services
 
             if (!result.Succeeded)
             {
+                foreach (var error in result.Errors)
+                {
+                    // Ajout des logs plus détaillés
+                    _logger.LogError("Error creating user: {Error}", error.Description);
+                }
                 throw new Exception("User creation failed.");
             }
 
             await _userManager.AddToRoleAsync(user, dto.Role);
 
-            dto.Id = user.Id;
             return dto;
         }
                
@@ -93,8 +96,7 @@ namespace Dot.Net.WebApi.Services
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return null!;
 
-            user.UserName = dto.Username;
-            user.Email = dto.Username;
+            user.UserName = dto.Username;            
             user.Fullname = dto.Fullname; // Ajouter Fullname
             user.Role = dto.Role; // Ajouter Role
 

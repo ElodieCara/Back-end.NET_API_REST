@@ -38,6 +38,24 @@ namespace Dot.Net.WebApi.Data
                     await userManager.AddToRoleAsync(user, "Admin");
                 }
             }
+
+            // Créer un utilisateur avec le rôle "User"
+            if (await userManager.FindByNameAsync("user1") == null)
+            {
+                var normalUser = new User
+                {
+                    UserName = "user1",
+                    Fullname = "Regular User",
+                    Role = "User"
+                };
+
+                var result = await userManager.CreateAsync(normalUser, "Password123!");
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(normalUser, "User");
+                }
+            }
         }
     }
 }

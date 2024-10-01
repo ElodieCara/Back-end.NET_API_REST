@@ -26,6 +26,11 @@ namespace Dot.Net.WebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserModel userModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = await _userService.AddAsync(userModel, userModel.Password);
             if (result == null)
             {
@@ -47,16 +52,7 @@ namespace Dot.Net.WebApi.Controllers
                 return Unauthorized();
             }
 
-            var userOutputDto = new UserOutputDto
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Fullname = user.Fullname,
-                Role = user.Role,
-                Token = user.Token 
-            };
-
-            return Ok(userOutputDto);
+            return Ok(user);
         }
 
         // Suppression de l'utilisateur
@@ -110,17 +106,9 @@ namespace Dot.Net.WebApi.Controllers
             if (user == null)
             {
                 return NotFound();
-            }
+            }                       
 
-            var userOutputDto = new UserOutputDto
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Fullname = user.Fullname,
-                Role = user.Role
-            };
-
-            return Ok(userOutputDto);
+            return Ok(user);
         }
 
         // Mise à jour de l'utilisateur

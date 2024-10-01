@@ -73,6 +73,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
+        
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = true;
@@ -86,7 +87,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
     options.User.AllowedUserNameCharacters =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;
+    options.User.RequireUniqueEmail = false;
 });
 
 builder.Services.ConfigureApplicationCookie(options =>

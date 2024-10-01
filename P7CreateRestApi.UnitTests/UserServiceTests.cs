@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Dot.Net.WebApi.Domain;
 using FluentAssertions;
 using Dot.Net.WebApi.Models;
+using Microsoft.Extensions.Logging;
 
 public class UserServiceTests
 {
     private readonly Mock<UserManager<User>> _mockUserManager;
+    private Mock<ILogger<UserService>> _mockLogger;
     private readonly UserService _userService;
 
     // Initialisation des mocks et du UserService avant chaque test
@@ -15,7 +17,8 @@ public class UserServiceTests
     {
         var store = new Mock<IUserStore<User>>();
         _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-        _userService = new UserService(_mockUserManager.Object);
+        _mockLogger = new Mock<ILogger<UserService>>();
+        _userService = new UserService(_mockUserManager.Object, _mockLogger.Object);
     }
 
     // Test pour vérifier si GetAllAsync renvoie la liste des utilisateurs
