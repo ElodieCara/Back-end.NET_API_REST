@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dot.Net.WebApi.Models;
+using P7CreateRestApi.Models.DTOs;
 
 namespace Dot.Net.WebApi.Services
 {
     public interface IUserService
     {
-        Task<IEnumerable<UserModel>> GetAllAsync();
-        Task<UserModel> LoginAsync(string username, string password);
-        Task<UserModel> GetByIdAsync(string id);
-        Task<UserModel> AddAsync(UserModel userModel, string password);
-        Task<UserModel> UpdateAsync(string id, UserModel userModel);
+        Task<IEnumerable<UserDto>> GetAllAsync();
+        Task<UserDto> LoginAsync(string username, string password);
+        Task<UserDto> GetByIdAsync(string id);
+        Task<UserDto> AddAsync(UserDto dto, string password);
+        Task<UserDto> UpdateAsync(string id, UserDto dto);
         Task DeleteAsync(string id);
     }
 }

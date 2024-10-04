@@ -13,13 +13,11 @@ using Dot.Net.WebApi.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
-builder.Logging.AddSimpleConsole(i => i.ColorBehavior = LoggerColorBehavior.Disabled);
-
-
+// Configurer la console pour le logging
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+builder.Logging.AddSimpleConsole(options => options.ColorBehavior = LoggerColorBehavior.Disabled);
 
-// Add services to the container.
+// Ajouter les services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -48,14 +46,16 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Configurer la base de données
 builder.Services.AddDbContext<LocalDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
+// Configurer Identity
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<LocalDbContext>()
     .AddDefaultTokenProviders();
 
-// Enregistrement du service BidList
+// Ajouter les services et les dépôts
 builder.Services.AddScoped<IBidListService, BidListService>();
 builder.Services.AddScoped<ICurvePointService, CurvePointService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
@@ -63,7 +63,6 @@ builder.Services.AddScoped<IRuleNameService, RuleNameService>();
 builder.Services.AddScoped<ITradeService, TradeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-// Enregistrement du dépôt BidListRepository
 builder.Services.AddScoped<IBidListRepository, BidListRepository>();
 builder.Services.AddScoped<ICurvePointRepository, CurvePointRepository>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
@@ -71,9 +70,9 @@ builder.Services.AddScoped<IRuleNameRepository, RuleNameRepository>();
 builder.Services.AddScoped<ITradeRepository, TradeRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+// Configurer les options d'Identity
 builder.Services.Configure<IdentityOptions>(options =>
 {
-        
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = true;
@@ -85,30 +84,11 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.AllowedForNewUsers = true;
 
-    options.User.AllowedUserNameCharacters =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
     options.User.RequireUniqueEmail = false;
 });
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-    options.LoginPath = "/Identity/Account/Login";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-    options.SlidingExpiration = true;
-});
-
-// Add Authorization Policies
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("admin_greetings", policy =>
-        policy.RequireRole("Admin")
-              .RequireClaim("scope", "greetings_api"));
-});
-
-// Configure JWT authentication
+// Configurer l'authentification avec JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -128,34 +108,48 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-var app = builder.Build();
-
-app.MapGet("/Test", async (ILogger<Program> logger, HttpResponse response) =>
+// Ajouter l'autorisation
+builder.Services.AddAuthorization(options =>
 {
-    logger.LogInformation("L'utilisateur s'est connecté.");
-    logger.LogWarning("Tentative de connexion échouée.");
-    logger.LogError("Erreur lors de la connexion.");
-    await response.WriteAsync("Testing");
+    options.AddPolicy("admin_greetings", policy =>
+        policy.RequireRole("Admin")
+              .RequireClaim("scope", "greetings_api"));
 });
 
-
-// Appel à la méthode pour créer les rôles et l'utilisateur admin
-using (var scope = app.Services.CreateScope())
+// Configurer CORS si nécessaire
+builder.Services.AddCors(options =>
 {
-    var serviceProvider = scope.ServiceProvider;
-    await IdentitySeedData.SeedRolesAndAdminUserAsync(serviceProvider);
-}
+    options.AddPolicy("AllowAllOrigins",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
 
-app.UseCors();
-app.UseAuthentication();
-app.UseAuthorization();
+var app = builder.Build();
 
+// Ajouter Swagger et SwaggerUI
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// Configurer l'authentification et l'autorisation
+app.UseCors("AllowAllOrigins");
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
+
+// Appel pour créer les rôles et l'utilisateur admin
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    await IdentitySeedData.SeedRolesAndAdminUserAsync(serviceProvider);
+}
+
 app.Run();

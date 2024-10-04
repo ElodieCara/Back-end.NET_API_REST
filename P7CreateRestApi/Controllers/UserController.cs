@@ -1,4 +1,3 @@
-using Dot.Net.WebApi.Models;
 using Dot.Net.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -22,73 +21,76 @@ namespace Dot.Net.WebApi.Controllers
             _logger = logger;
         }
 
-        // Méthode d'enregistrement (register)
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserModel userModel)
+        public async Task<IActionResult> Register([FromBody] UserDto userDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _userService.AddAsync(userModel, userModel.Password);
+            var result = await _userService.AddAsync(userDto, userDto.Password);
             if (result == null)
             {
-                _logger.LogError("User creation failed for {Username}", userModel.Username);
                 return BadRequest("User creation failed");
             }
 
             return Ok(result);
         }
 
-        // Méthode de connexion (login)
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
+public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
+{
+    var user = await _userService.LoginAsync(loginModel.Username, loginModel.Password);
+    if (user == null)
+    {
+        _logger.LogWarning("Unauthorized login attempt for {Username}", loginModel.Username);
+        return Unauthorized();
+    }
+
+    return Ok(new
+    {
+        token = user.Token // Ici tu retournes uniquement le token dans un format simple
+    });
+}
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserDto userDto)
         {
-            var user = await _userService.LoginAsync(loginModel.Username, loginModel.Password);
-            if (user == null)
+            if (!ModelState.IsValid)
             {
-                _logger.LogWarning("Unauthorized login attempt for {Username}", loginModel.Username);
-                return Unauthorized();
+                return BadRequest(ModelState);
             }
 
-            return Ok(user);
+            var updatedUser = await _userService.UpdateAsync(id, userDto);
+            if (updatedUser == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedUser);
         }
 
-        // Suppression de l'utilisateur
+
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
+            _logger.LogInformation($"Tentative de suppression de l'utilisateur avec ID : {id}");
+
             var user = await _userService.GetByIdAsync(id);
             if (user == null)
             {
+                _logger.LogWarning($"Utilisateur avec ID {id} non trouvé");
                 return NotFound();
             }
 
             await _userService.DeleteAsync(id);
+            _logger.LogInformation($"Utilisateur avec ID {id} supprimé avec succès");
             return NoContent();
         }
 
-        // Méthode pour anonymiser les données utilisateur
-        [Authorize]
-        [HttpPut("anonymize/{id}")]
-        public async Task<IActionResult> AnonymizeUser(string id)
-        {
-            var user = await _userService.GetByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            user.Fullname = "Anonymous";
-            user.Username = "anonymous_user";
-
-            await _userService.UpdateAsync(id, user);
-            return Ok();
-        }
-
-        // Récupérer tous les utilisateurs
         [Authorize]
         [HttpGet("list")]
         public async Task<IActionResult> GetAllUsers()
@@ -97,7 +99,6 @@ namespace Dot.Net.WebApi.Controllers
             return Ok(users);
         }
 
-        // Récupérer un utilisateur par ID
         [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(string id)
@@ -106,23 +107,9 @@ namespace Dot.Net.WebApi.Controllers
             if (user == null)
             {
                 return NotFound();
-            }                       
-
-            return Ok(user);
-        }
-
-        // Mise à jour de l'utilisateur
-        [Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserModel userModel)
-        {
-            var updatedUser = await _userService.UpdateAsync(id, userModel);
-            if (updatedUser == null)
-            {
-                return NotFound();
             }
 
-            return Ok(updatedUser);
+            return Ok(user);
         }
     }
 }
