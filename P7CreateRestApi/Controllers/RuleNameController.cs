@@ -25,7 +25,7 @@ public class RuleNameController : ControllerBase
     {
         _logger.LogInformation("Fetching all rule names.");
         var ruleNames = await _service.GetAllAsync();
-        return Ok(ruleNames);
+        return Ok(new { Message = "All rule names fetched successfully.", Data = ruleNames });
     }
 
     [HttpGet("{id}")]
@@ -37,10 +37,10 @@ public class RuleNameController : ControllerBase
         if (ruleName == null)
         {
             _logger.LogWarning("Rule name with ID: {RuleId} not found.", id);
-            return NotFound();
+            return NotFound(new { Message = $"Rule name with ID {id} not found." });
         }
 
-        return Ok(ruleName);
+        return Ok(new { Message = $"Rule name with ID {id} fetched successfully.", Data = ruleName });
     }
 
     [HttpPost]
@@ -51,11 +51,11 @@ public class RuleNameController : ControllerBase
         {
             _logger.LogInformation("Adding new rule name.");
             var newRuleName = await _service.AddAsync(ruleNameDto);
-            return CreatedAtAction(nameof(GetRuleName), new { id = newRuleName.Id }, newRuleName);
+            return CreatedAtAction(nameof(GetRuleName), new { id = newRuleName.Id }, new { Message = "Rule name created successfully.", Data = newRuleName });
         }
 
         _logger.LogError("Invalid model state while adding a rule name.");
-        return BadRequest(ModelState);
+        return BadRequest(new { Message = "Invalid model state.", Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
     }
 
     [HttpPut("{id}")]
@@ -69,14 +69,14 @@ public class RuleNameController : ControllerBase
             if (updatedRuleName == null)
             {
                 _logger.LogWarning("Rule name with ID: {RuleId} not found for update.", id);
-                return NotFound();
+                return NotFound(new { Message = $"Rule name with ID {id} not found for update." });
             }
 
-            return NoContent();
+            return Ok(new { Message = $"Rule name with ID {id} updated successfully.", Data = updatedRuleName });
         }
 
         _logger.LogError("Invalid model state while updating rule name with ID: {RuleId}", id);
-        return BadRequest(ModelState);
+        return BadRequest(new { Message = "Invalid model state.", Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
     }
 
     [HttpDelete("{id}")]
@@ -88,9 +88,10 @@ public class RuleNameController : ControllerBase
         if (ruleName == null)
         {
             _logger.LogWarning("Rule name with ID: {RuleId} not found for deletion.", id);
-            return NotFound();
+            return NotFound(new { Message = $"Rule name with ID {id} not found for deletion." });
         }
         await _service.DeleteAsync(id);
-        return NoContent();
+        _logger.LogInformation("Rule name with ID: {RuleId} deleted successfully.", id);
+        return Ok(new { Message = $"Rule name with ID {id} deleted successfully." });
     }
 }

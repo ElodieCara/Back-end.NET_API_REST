@@ -30,7 +30,6 @@ namespace Dot.Net.WebApi.Controllers
             _logger.LogInformation("Fetching all ratings.");
             var ratings = await _service.GetAllAsync();
 
-            // Convert RatingModel to RatingDto
             var ratingDtos = ratings.Select(rating => new RatingDto
             {
                 Id = rating.Id,
@@ -40,7 +39,7 @@ namespace Dot.Net.WebApi.Controllers
                 OrderNumber = rating.OrderNumber
             }).ToList();
 
-            return Ok(ratingDtos);
+            return Ok(new { Message = "All ratings fetched successfully.", Data = ratingDtos });
         }
 
         [HttpGet("{id}")]
@@ -52,10 +51,9 @@ namespace Dot.Net.WebApi.Controllers
             if (rating == null)
             {
                 _logger.LogWarning("Rating with ID: {RatingId} not found.", id);
-                return NotFound();
+                return NotFound(new { Message = $"Rating with ID {id} not found." });
             }
 
-            // Convert RatingModel to RatingDto
             var ratingDto = new RatingDto
             {
                 Id = rating.Id,
@@ -65,7 +63,7 @@ namespace Dot.Net.WebApi.Controllers
                 OrderNumber = rating.OrderNumber
             };
 
-            return Ok(ratingDto);
+            return Ok(new { Message = $"Rating with ID {id} fetched successfully.", Data = ratingDto });
         }
 
         [HttpPost]
@@ -78,7 +76,6 @@ namespace Dot.Net.WebApi.Controllers
 
                 var newRating = await _service.AddAsync(ratingModel);
 
-                // Convert RatingModel to RatingDto
                 var ratingOutputDto = new RatingDto
                 {
                     Id = newRating.Id,
@@ -88,11 +85,11 @@ namespace Dot.Net.WebApi.Controllers
                     OrderNumber = newRating.OrderNumber
                 };
 
-                return CreatedAtAction(nameof(GetRating), new { id = ratingOutputDto.Id }, ratingOutputDto);
+                return CreatedAtAction(nameof(GetRating), new { id = ratingOutputDto.Id }, new { Message = "Rating created successfully.", Data = ratingOutputDto });
             }
 
             _logger.LogError("Invalid model state while adding a rating.");
-            return BadRequest(ModelState);
+            return BadRequest(new { Message = "Invalid model state.", Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
         }
 
         [HttpPut("{id}")]
@@ -107,14 +104,15 @@ namespace Dot.Net.WebApi.Controllers
                 if (updatedRating == null)
                 {
                     _logger.LogWarning("Rating with ID: {RatingId} not found for update.", id);
-                    return NotFound();
+                    return NotFound(new { Message = $"Rating with ID {id} not found for update." });
                 }
 
-                return NoContent();
+                _logger.LogInformation("Rating with ID: {RatingId} updated successfully.", id);
+                return Ok(new { Message = $"Rating with ID {id} updated successfully.", Data = updatedRating });
             }
 
             _logger.LogError("Invalid model state while updating rating with ID: {RatingId}", id);
-            return BadRequest(ModelState);
+            return BadRequest(new { Message = "Invalid model state.", Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
         }
 
         [HttpDelete("{id}")]
@@ -126,10 +124,12 @@ namespace Dot.Net.WebApi.Controllers
             if (rating == null)
             {
                 _logger.LogWarning("Rating with ID: {RatingId} not found for deletion.", id);
-                return NotFound();
+                return NotFound(new { Message = $"Rating with ID {id} not found for deletion." });
             }
+
             await _service.DeleteAsync(id);
-            return NoContent();
+            _logger.LogInformation("Rating with ID: {RatingId} deleted successfully.", id);
+            return Ok(new { Message = $"Rating with ID {id} deleted successfully." });
         }
     }
 }

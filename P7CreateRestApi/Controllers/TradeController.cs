@@ -27,7 +27,7 @@ namespace Dot.Net.WebApi.Controllers
         {
             _logger.LogInformation("Fetching all trades.");
             var trades = await _service.GetAllAsync();
-            return Ok(trades);
+            return Ok(new { Message = "All trades fetched successfully.", Data = trades });
         }
 
         [HttpGet("{id}")]
@@ -39,10 +39,10 @@ namespace Dot.Net.WebApi.Controllers
             if (trade == null)
             {
                 _logger.LogWarning("Trade with ID: {TradeId} not found.", id);
-                return NotFound();
+                return NotFound(new { Message = $"Trade with ID {id} not found." });
             }
 
-            return Ok(trade);
+            return Ok(new { Message = $"Trade with ID {id} fetched successfully.", Data = trade });
         }
 
         [HttpPost]
@@ -53,11 +53,11 @@ namespace Dot.Net.WebApi.Controllers
             {
                 _logger.LogInformation("Adding new trade.");
                 var newTrade = await _service.AddAsync(tradeDto);
-                return CreatedAtAction(nameof(GetTrade), new { id = newTrade.TradeId }, newTrade);
+                return CreatedAtAction(nameof(GetTrade), new { id = newTrade.TradeId }, new { Message = "Trade created successfully.", Data = newTrade });
             }
 
             _logger.LogError("Invalid model state while adding a trade.");
-            return BadRequest(ModelState);
+            return BadRequest(new { Message = "Invalid model state.", Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
         }
 
         [HttpPut("{id}")]
@@ -71,14 +71,14 @@ namespace Dot.Net.WebApi.Controllers
                 if (updatedTrade == null)
                 {
                     _logger.LogWarning("Trade with ID: {TradeId} not found.", id);
-                    return NotFound();
+                    return NotFound(new { Message = $"Trade with ID {id} not found for update." });
                 }
 
-                return NoContent();
+                return Ok(new { Message = $"Trade with ID {id} updated successfully.", Data = updatedTrade });
             }
 
             _logger.LogError("Invalid model state while updating trade with ID: {TradeId}", id);
-            return BadRequest(ModelState);
+            return BadRequest(new { Message = "Invalid model state.", Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
         }
 
         [HttpDelete("{id}")]
@@ -90,11 +90,12 @@ namespace Dot.Net.WebApi.Controllers
             if (trade == null)
             {
                 _logger.LogWarning("Trade with ID: {TradeId} not found.", id);
-                return NotFound();
+                return NotFound(new { Message = $"Trade with ID {id} not found for deletion." });
             }
 
             await _service.DeleteAsync(id);
-            return NoContent();
+            _logger.LogInformation("Trade with ID {TradeId} deleted successfully.", id);
+            return Ok(new { Message = $"Trade with ID {id} deleted successfully." });
         }
     }
 }

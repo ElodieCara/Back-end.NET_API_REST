@@ -68,23 +68,25 @@ namespace Dot.Net.WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateBidList(int id, [FromBody] BidListDto bidListDto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _logger.LogInformation("Mise à jour du BidList avec l'id {id}", id);
-
-                var updatedBidList = await _service.UpdateAsync(id, bidListDto);
-                if (updatedBidList == null)
-                {
-                    _logger.LogWarning("BidList avec l'id {id} non trouvé pour mise à jour.", id);
-                    return NotFound();
-                }
-
-                return NoContent();
+                _logger.LogWarning("Modèle de mise à jour du BidList invalide pour l'id {id}.", id);
+                return BadRequest(new { Message = "Invalid BidList model.", Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
             }
 
-            _logger.LogWarning("Modèle de mise à jour du BidList invalide.");
-            return BadRequest(ModelState);
+            _logger.LogInformation("Mise à jour du BidList avec l'id {id}.", id);
+
+            var updatedBidList = await _service.UpdateAsync(id, bidListDto);
+            if (updatedBidList == null)
+            {
+                _logger.LogWarning("BidList avec l'id {id} non trouvé pour mise à jour.", id);
+                return NotFound(new { Message = $"BidList with ID {id} not found." });
+            }
+
+            _logger.LogInformation("BidList avec l'id {id} mis à jour avec succès.", id);
+            return Ok(new { Message = $"BidList with ID {id} has been successfully updated.", Data = updatedBidList });
         }
+
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
@@ -95,12 +97,14 @@ namespace Dot.Net.WebApi.Controllers
             if (bidList == null)
             {
                 _logger.LogWarning("BidList avec l'id {id} non trouvé pour suppression.", id);
-                return NotFound();
+                return NotFound(new { Message = $"BidList avec l'id {id} non trouvé." });
             }
 
             await _service.DeleteAsync(id);
             _logger.LogInformation("BidList avec l'id {id} supprimé avec succès.", id);
-            return NoContent();
+
+            // Retourne un message de confirmation avec le statut 200 OK
+            return Ok(new { Message = $"BidList with ID {id} has been successfully deleted." });
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Dot.Net.WebApi.Controllers
         {
             _logger.LogInformation("Fetching all curve points.");
             var curvePoints = await _service.GetAllAsync();
-            return Ok(curvePoints);
+            return Ok(new { Message = "All curve points fetched successfully.", Data = curvePoints });
         }
 
         [HttpGet("{id}")]
@@ -39,9 +39,9 @@ namespace Dot.Net.WebApi.Controllers
             if (curvePoint == null)
             {
                 _logger.LogWarning("Curve point with ID: {id} not found", id);
-                return NotFound();
+                return NotFound(new { Message = $"Curve point with ID {id} not found." });
             }
-            return Ok(curvePoint);
+            return Ok(new { Message = $"Curve point with ID {id} fetched successfully.", Data = curvePoint });
         }
 
         [HttpPost]
@@ -52,11 +52,11 @@ namespace Dot.Net.WebApi.Controllers
             {
                 _logger.LogInformation("Adding new curve point.");
                 var newCurvePoint = await _service.AddAsync(curvePointDto);
-                return CreatedAtAction(nameof(GetCurvePoint), new { id = newCurvePoint.Id }, newCurvePoint);
+                return CreatedAtAction(nameof(GetCurvePoint), new { id = newCurvePoint.Id }, new { Message = "Curve point created successfully.", Data = newCurvePoint });
             }
 
             _logger.LogError("Invalid model state while adding a curve point.");
-            return BadRequest(ModelState);
+            return BadRequest(new { Message = "Invalid model state.", Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
         }
 
         [HttpPut("{id}")]
@@ -70,13 +70,14 @@ namespace Dot.Net.WebApi.Controllers
                 if (updatedCurvePoint == null)
                 {
                     _logger.LogWarning("Curve point with ID: {id} not found for update", id);
-                    return NotFound();
+                    return NotFound(new { Message = $"Curve point with ID {id} not found for update." });
                 }
-                return NoContent();
+                _logger.LogInformation("Curve point with ID: {id} updated successfully.", id);
+                return Ok(new { Message = $"Curve point with ID {id} updated successfully.", Data = updatedCurvePoint });
             }
 
             _logger.LogError("Invalid model state while updating a curve point.");
-            return BadRequest(ModelState);
+            return BadRequest(new { Message = "Invalid model state.", Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
         }
 
         [HttpDelete("{id}")]
@@ -88,11 +89,12 @@ namespace Dot.Net.WebApi.Controllers
             if (curvePoint == null)
             {
                 _logger.LogWarning("Curve point with ID: {id} not found for deletion", id);
-                return NotFound();
+                return NotFound(new { Message = $"Curve point with ID {id} not found for deletion." });
             }
 
             await _service.DeleteAsync(id);
-            return NoContent();
+            _logger.LogInformation("Curve point with ID: {id} deleted successfully.", id);
+            return Ok(new { Message = $"Curve point with ID {id} deleted successfully." });
         }
     }
 }
