@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace P7CreateRestApi.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class RecreateForeignKeyRelations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -51,119 +51,54 @@ namespace P7CreateRestApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Bids",
-                columns: table => new
-                {
-                    BidListId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Account = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    BidType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    BidQuantity = table.Column<double>(type: "float", nullable: true),
-                    AskQuantity = table.Column<double>(type: "float", nullable: true),
-                    Bid = table.Column<double>(type: "float", nullable: true),
-                    Ask = table.Column<double>(type: "float", nullable: true),
-                    Benchmark = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    BidListDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Commentary = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    BidSecurity = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    BidStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Trader = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Book = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CreationName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    RevisionName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    RevisionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DealName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    DealType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    SourceListId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Side = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Bids", x => x.BidListId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CurvePoints",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    CurvePoint_Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CurveId = table.Column<byte>(type: "tinyint", nullable: true),
-                    AsOfDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Curve_Id = table.Column<byte>(type: "tinyint", nullable: true),
+                    As_Of_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Term = table.Column<double>(type: "float", nullable: true),
-                    CurvePointValue = table.Column<double>(type: "float", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CurvePoint_Value = table.Column<double>(type: "float", nullable: true),
+                    Creation_Date = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CurvePoints", x => x.Id);
+                    table.PrimaryKey("PK_CurvePoints", x => x.CurvePoint_Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Ratings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Rating_Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MoodysRating = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SandPRating = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FitchRating = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OrderNumber = table.Column<byte>(type: "tinyint", nullable: true)
+                    Moodys_Rating = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    SAndP_Rating = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Fitch_Rating = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Order_Number = table.Column<byte>(type: "tinyint", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ratings", x => x.Id);
+                    table.PrimaryKey("PK_Ratings", x => x.Rating_Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "RuleNames",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    RuleName_Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Json = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Template = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SqlStr = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SqlPart = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Sql_Str = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Sql_Part = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RuleNames", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Trades",
-                columns: table => new
-                {
-                    TradeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Account = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AccountType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BuyQuantity = table.Column<double>(type: "float", nullable: true),
-                    SellQuantity = table.Column<double>(type: "float", nullable: true),
-                    BuyPrice = table.Column<double>(type: "float", nullable: true),
-                    SellPrice = table.Column<double>(type: "float", nullable: true),
-                    TradeDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TradeSecurity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TradeStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Trader = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Benchmark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Book = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreationName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    RevisionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RevisionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DealName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DealType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SourceListId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Side = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Trades", x => x.TradeId);
+                    table.PrimaryKey("PK_RuleNames", x => x.RuleName_Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -272,6 +207,95 @@ namespace P7CreateRestApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "BidLists",
+                columns: table => new
+                {
+                    BidList_Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Rating_Id = table.Column<int>(type: "int", nullable: true),
+                    Account = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Bid_Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Bid_Quantity = table.Column<double>(type: "float", nullable: true),
+                    Ask_Quantity = table.Column<double>(type: "float", nullable: true),
+                    Bid = table.Column<double>(type: "float", nullable: true),
+                    Ask = table.Column<double>(type: "float", nullable: true),
+                    Benchmark = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    BidList_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Commentary = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Bid_Security = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Bid_Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Trader_Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Book = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Creation_Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Creation_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Revision_Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Revision_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Deal_Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Deal_Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Source_List_Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Side = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BidLists", x => x.BidList_Id);
+                    table.ForeignKey(
+                        name: "FK_BidLists_Ratings_Rating_Id",
+                        column: x => x.Rating_Id,
+                        principalTable: "Ratings",
+                        principalColumn: "Rating_Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Trades",
+                columns: table => new
+                {
+                    Trade_Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Account = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Account_Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Buy_Quantity = table.Column<double>(type: "float", nullable: true),
+                    Sell_Quantity = table.Column<double>(type: "float", nullable: true),
+                    Buy_Price = table.Column<double>(type: "float", nullable: true),
+                    Sell_Price = table.Column<double>(type: "float", nullable: true),
+                    Trade_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Trade_Security = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Trade_Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Trader = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Benchmark = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Book = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Creation_Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Creation_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Revision_Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Revision_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Deal_Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Deal_Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Source_List_Id = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Side = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    User_Id = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Rating_Id = table.Column<int>(type: "int", nullable: true),
+                    BidList_Id = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Trades", x => x.Trade_Id);
+                    table.ForeignKey(
+                        name: "FK_Trades_AspNetUsers_User_Id",
+                        column: x => x.User_Id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Trades_BidLists_BidList_Id",
+                        column: x => x.BidList_Id,
+                        principalTable: "BidLists",
+                        principalColumn: "BidList_Id");
+                    table.ForeignKey(
+                        name: "FK_Trades_Ratings_Rating_Id",
+                        column: x => x.Rating_Id,
+                        principalTable: "Ratings",
+                        principalColumn: "Rating_Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -310,6 +334,26 @@ namespace P7CreateRestApi.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BidLists_Rating_Id",
+                table: "BidLists",
+                column: "Rating_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Trades_BidList_Id",
+                table: "Trades",
+                column: "BidList_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Trades_Rating_Id",
+                table: "Trades",
+                column: "Rating_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Trades_User_Id",
+                table: "Trades",
+                column: "User_Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -330,13 +374,7 @@ namespace P7CreateRestApi.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Bids");
-
-            migrationBuilder.DropTable(
                 name: "CurvePoints");
-
-            migrationBuilder.DropTable(
-                name: "Ratings");
 
             migrationBuilder.DropTable(
                 name: "RuleNames");
@@ -349,6 +387,12 @@ namespace P7CreateRestApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "BidLists");
+
+            migrationBuilder.DropTable(
+                name: "Ratings");
         }
     }
 }

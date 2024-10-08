@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace P7CreateRestApi.Migrations
 {
     [DbContext(typeof(LocalDbContext))]
-    [Migration("20240903145939_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241008090745_RecreateForeignKeyRelations")]
+    partial class RecreateForeignKeyRelations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,128 +28,162 @@ namespace P7CreateRestApi.Migrations
                 {
                     b.Property<int>("BidListId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("BidList_Id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BidListId"), 1L, 1);
 
                     b.Property<string>("Account")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Account");
 
                     b.Property<double?>("Ask")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("Ask");
 
                     b.Property<double?>("AskQuantity")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("Ask_Quantity");
 
                     b.Property<string>("Benchmark")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Benchmark");
 
                     b.Property<double?>("Bid")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("Bid");
 
                     b.Property<DateTime?>("BidListDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("BidList_Date");
 
                     b.Property<double?>("BidQuantity")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("Bid_Quantity");
 
                     b.Property<string>("BidSecurity")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Bid_Security");
 
                     b.Property<string>("BidStatus")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Bid_Status");
 
                     b.Property<string>("BidType")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Bid_Type");
 
                     b.Property<string>("Book")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Book");
 
                     b.Property<string>("Commentary")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("Commentary");
 
                     b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Creation_Date");
 
                     b.Property<string>("CreationName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Creation_Name");
 
                     b.Property<string>("DealName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Deal_Name");
 
                     b.Property<string>("DealType")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Deal_Type");
+
+                    b.Property<int?>("RatingId")
+                        .HasColumnType("int")
+                        .HasColumnName("Rating_Id");
 
                     b.Property<DateTime?>("RevisionDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Revision_Date");
 
                     b.Property<string>("RevisionName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Revision_Name");
 
                     b.Property<string>("Side")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("Side");
 
                     b.Property<string>("SourceListId")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Source_List_Id");
 
                     b.Property<string>("Trader")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Trader_Name");
 
                     b.HasKey("BidListId");
 
-                    b.ToTable("Bids");
+                    b.HasIndex("RatingId");
+
+                    b.ToTable("BidLists");
                 });
 
             modelBuilder.Entity("Dot.Net.WebApi.Domain.CurvePoint", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("CurvePoint_Id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime?>("AsOfDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("As_Of_Date");
 
                     b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Creation_Date");
 
                     b.Property<byte?>("CurveId")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("tinyint")
+                        .HasColumnName("Curve_Id");
 
                     b.Property<double?>("CurvePointValue")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("CurvePoint_Value");
 
                     b.Property<double?>("Term")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("Term");
 
                     b.HasKey("Id");
 
@@ -160,24 +194,32 @@ namespace P7CreateRestApi.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("Rating_Id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("FitchRating")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Fitch_Rating");
 
                     b.Property<string>("MoodysRating")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Moodys_Rating");
 
                     b.Property<byte?>("OrderNumber")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("tinyint")
+                        .HasColumnName("Order_Number");
 
                     b.Property<string>("SandPRating")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("SAndP_Rating");
 
                     b.HasKey("Id");
 
@@ -188,33 +230,42 @@ namespace P7CreateRestApi.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("RuleName_Id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("Description");
 
                     b.Property<string>("Json")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Json");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Name");
 
                     b.Property<string>("SqlPart")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Sql_Part");
 
                     b.Property<string>("SqlStr")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Sql_Str");
 
                     b.Property<string>("Template")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Template");
 
                     b.HasKey("Id");
 
@@ -225,71 +276,110 @@ namespace P7CreateRestApi.Migrations
                 {
                     b.Property<int>("TradeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("Trade_Id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TradeId"), 1L, 1);
 
                     b.Property<string>("Account")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Account");
 
                     b.Property<string>("AccountType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Account_Type");
 
                     b.Property<string>("Benchmark")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Benchmark");
+
+                    b.Property<int?>("BidListId")
+                        .HasColumnType("int")
+                        .HasColumnName("BidList_Id");
 
                     b.Property<string>("Book")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Book");
 
                     b.Property<double?>("BuyPrice")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("Buy_Price");
 
                     b.Property<double?>("BuyQuantity")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("Buy_Quantity");
 
                     b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Creation_Date");
 
                     b.Property<string>("CreationName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Creation_Name");
 
                     b.Property<string>("DealName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Deal_Name");
 
                     b.Property<string>("DealType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Deal_Type");
+
+                    b.Property<int?>("RatingId")
+                        .HasColumnType("int")
+                        .HasColumnName("Rating_Id");
 
                     b.Property<DateTime?>("RevisionDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Revision_Date");
 
                     b.Property<string>("RevisionName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Revision_Name");
 
                     b.Property<double?>("SellPrice")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("Sell_Price");
 
                     b.Property<double?>("SellQuantity")
-                        .HasColumnType("float");
+                        .HasColumnType("float")
+                        .HasColumnName("Sell_Quantity");
 
                     b.Property<string>("Side")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Side");
 
                     b.Property<string>("SourceListId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Source_List_Id");
 
                     b.Property<DateTime?>("TradeDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Trade_Date");
 
                     b.Property<string>("TradeSecurity")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Trade_Security");
 
                     b.Property<string>("TradeStatus")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Trade_Status");
 
                     b.Property<string>("Trader")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Trader");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("User_Id");
 
                     b.HasKey("TradeId");
+
+                    b.HasIndex("BidListId");
+
+                    b.HasIndex("RatingId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Trades");
                 });
@@ -316,7 +406,8 @@ namespace P7CreateRestApi.Migrations
                     b.Property<string>("Fullname")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Fullname");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -344,7 +435,8 @@ namespace P7CreateRestApi.Migrations
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("Role");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -502,6 +594,36 @@ namespace P7CreateRestApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Dot.Net.WebApi.Domain.BidList", b =>
+                {
+                    b.HasOne("Dot.Net.WebApi.Domain.Rating", "Rating")
+                        .WithMany("BidLists")
+                        .HasForeignKey("RatingId");
+
+                    b.Navigation("Rating");
+                });
+
+            modelBuilder.Entity("Dot.Net.WebApi.Domain.Trade", b =>
+                {
+                    b.HasOne("Dot.Net.WebApi.Domain.BidList", "BidList")
+                        .WithMany("Trades")
+                        .HasForeignKey("BidListId");
+
+                    b.HasOne("Dot.Net.WebApi.Domain.Rating", "Rating")
+                        .WithMany("Trades")
+                        .HasForeignKey("RatingId");
+
+                    b.HasOne("Dot.Net.WebApi.Domain.User", "User")
+                        .WithMany("Trades")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("BidList");
+
+                    b.Navigation("Rating");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -551,6 +673,23 @@ namespace P7CreateRestApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Dot.Net.WebApi.Domain.BidList", b =>
+                {
+                    b.Navigation("Trades");
+                });
+
+            modelBuilder.Entity("Dot.Net.WebApi.Domain.Rating", b =>
+                {
+                    b.Navigation("BidLists");
+
+                    b.Navigation("Trades");
+                });
+
+            modelBuilder.Entity("Dot.Net.WebApi.Domain.User", b =>
+                {
+                    b.Navigation("Trades");
                 });
 #pragma warning restore 612, 618
         }

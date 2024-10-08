@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
 namespace Dot.Net.WebApi.Domain
 {
     [Table("Trades")]
@@ -75,20 +74,19 @@ namespace Dot.Net.WebApi.Domain
         // Clé étrangère vers User
         [ForeignKey("User")]
         [Column("User_Id")]
-        public string UserId { get; set; }
-        public User User { get; set; }
+        public string? UserId { get; set; }  // Nullable
+        public User? User { get; set; }  // Nullable
 
         // Clé étrangère vers Rating
         [ForeignKey("Rating")]
         [Column("Rating_Id")]
-        public int? RatingId { get; set; }
-        public Rating? Rating { get; set; }  // Relation avec Rating
+        public int? RatingId { get; set; }  // Nullable
+        public Rating? Rating { get; set; }  // Nullable
 
         // Clé étrangère vers BidList
         [ForeignKey("BidList")]
         [Column("BidList_Id")]
-        public int BidListId { get; set; }
-        public BidList BidList { get; set; }
+        public int? BidListId { get; set; }  // Nullable
+        public BidList? BidList { get; set; }  // Nullable
     }
 }
-

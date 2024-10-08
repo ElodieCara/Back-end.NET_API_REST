@@ -291,7 +291,7 @@ namespace P7CreateRestApi.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Benchmark");
 
-                    b.Property<int>("BidListId")
+                    b.Property<int?>("BidListId")
                         .HasColumnType("int")
                         .HasColumnName("BidList_Id");
 
@@ -368,7 +368,6 @@ namespace P7CreateRestApi.Migrations
                         .HasColumnName("Trader");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("User_Id");
 
@@ -606,9 +605,7 @@ namespace P7CreateRestApi.Migrations
                 {
                     b.HasOne("Dot.Net.WebApi.Domain.BidList", "BidList")
                         .WithMany("Trades")
-                        .HasForeignKey("BidListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BidListId");
 
                     b.HasOne("Dot.Net.WebApi.Domain.Rating", "Rating")
                         .WithMany("Trades")
@@ -616,9 +613,7 @@ namespace P7CreateRestApi.Migrations
 
                     b.HasOne("Dot.Net.WebApi.Domain.User", "User")
                         .WithMany("Trades")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("BidList");
 

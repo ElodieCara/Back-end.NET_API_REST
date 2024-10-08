@@ -20,24 +20,24 @@ namespace Dot.Net.WebApi.Data
             builder.Entity<BidList>()
                 .HasMany(b => b.Trades)
                 .WithOne(t => t.BidList)
-                .HasForeignKey(t => t.BidListId);
+                .HasForeignKey(t => t.BidListId)
+                .IsRequired(false);  // Nullable BidListId
 
             // One-to-Many: Un utilisateur peut avoir plusieurs trades
             builder.Entity<Trade>()
                 .HasOne(t => t.User)
                 .WithMany(u => u.Trades)
-                .HasForeignKey(t => t.UserId);
+                .HasForeignKey(t => t.UserId)
+                .IsRequired(false);  // Nullable UserId
 
+            // One-to-Many: Un Rating peut avoir plusieurs Trades
             builder.Entity<Trade>()
                 .HasOne(t => t.Rating)
                 .WithMany(r => r.Trades)
-                .HasForeignKey(t => t.RatingId);
-
-            builder.Entity<BidList>()
-                .HasOne(b => b.Rating)
-                .WithMany(r => r.BidLists)
-                .HasForeignKey(b => b.RatingId);            
+                .HasForeignKey(t => t.RatingId)
+                .IsRequired(false);  // Nullable RatingId
         }
+
 
         // Ajout du DbSet pour l'entité BidList
         public DbSet<BidList> Bids { get; set; } = null!;
