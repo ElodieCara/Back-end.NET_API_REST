@@ -3,14 +3,16 @@ using Dot.Net.WebApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Dot.Net.WebApi.Domain;
 using FluentAssertions;
-using Dot.Net.WebApi.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using P7CreateRestApi.Models.DTOs;
 
 public class UserServiceTests
 {
     private readonly Mock<UserManager<User>> _mockUserManager;
     private Mock<ILogger<UserService>> _mockLogger;
     private readonly UserService _userService;
+    private readonly Mock<IConfiguration> _mockConfiguration;
 
     // Initialisation des mocks et du UserService avant chaque test
     public UserServiceTests()
@@ -18,7 +20,14 @@ public class UserServiceTests
         var store = new Mock<IUserStore<User>>();
         _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
         _mockLogger = new Mock<ILogger<UserService>>();
-        _userService = new UserService(_mockUserManager.Object, _mockLogger.Object);
+        _mockConfiguration = new Mock<IConfiguration>();
+
+        // Mock JWT settings in configuration
+        _mockConfiguration.SetupGet(config => config["Jwt:Key"]).Returns("this_is_a_test_key_for_jwt_token");
+        _mockConfiguration.SetupGet(config => config["Jwt:Issuer"]).Returns("test_issuer");
+        _mockConfiguration.SetupGet(config => config["Jwt:Audience"]).Returns("test_audience");
+
+        _userService = new UserService(_mockUserManager.Object, _mockLogger.Object, _mockConfiguration.Object);
     }
 
     // Test pour vérifier si GetAllAsync renvoie la liste des utilisateurs
@@ -81,11 +90,10 @@ public class UserServiceTests
     public async Task AddAsync_ShouldReturnNewUser_WhenUserIsCreated()
     {
         // Arrange: Simuler les données du nouvel utilisateur
-        var userModel = new UserModel
+        var userDto = new UserDto
         {
             Username = "NewUser",
             Fullname = "Full New User",
-            Password = "Password123",
             Role = "User"
         };
 
@@ -94,12 +102,15 @@ public class UserServiceTests
             .ReturnsAsync(IdentityResult.Success);
 
         // Act: Appel de la méthode AddAsync
-        var result = await _userService.AddAsync(userModel, "Password123");
+        var result = await _userService.AddAsync(userDto, "Password123");
 
         // Assert: Vérification que l'utilisateur a bien été créé et que les informations sont correctes
         result.Should().NotBeNull();
         result.Username.Should().Be("NewUser");
         result.Role.Should().Be("User");
+
+        // Vérification que le token JWT est généré
+        result.Token.Should().NotBeNullOrEmpty();
     }
 
     // Test pour vérifier si GetByIdAsync renvoie un utilisateur lorsque celui-ci existe
@@ -128,15 +139,14 @@ public class UserServiceTests
         _mockUserManager.Setup(um => um.UpdateAsync(It.IsAny<User>())).ReturnsAsync(IdentityResult.Success);
 
         // Définir les nouvelles informations utilisateur
-        var userModel = new UserModel
+        var userDto = new UserDto
         {
             Username = "UpdatedUser",
             Fullname = "Updated Fullname",
             Role = "User"
         };
-
         // Act: Appel de la méthode UpdateAsync
-        var result = await _userService.UpdateAsync("1", userModel);
+        var result = await _userService.UpdateAsync("1", userDto);
 
         // Assert: Vérification que l'utilisateur a bien été mis à jour
         result.Should().NotBeNull();

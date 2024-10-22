@@ -11,7 +11,7 @@
         "projectName": "P7CreateRestApi.UnitTests",
         "projectPath": "C:\\Users\\carad\\Source\\Repos\\Back-end.NET_API_REST\\P7CreateRestApi.UnitTests\\P7CreateRestApi.UnitTests.csproj",
         "packagesPath": "C:\\Users\\carad\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\carad\\Source\\Repos\\Back-end.NET_API_REST\\P7CreateRestApi.UnitTests\\obj\\",
+        "outputPath": "C:\\Users\\carad\\source\\repos\\Back-end.NET_API_REST\\P7CreateRestApi.UnitTests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -109,7 +109,7 @@
         "projectName": "P7CreateRestApi",
         "projectPath": "C:\\Users\\carad\\Source\\Repos\\Back-end.NET_API_REST\\P7CreateRestApi\\P7CreateRestApi.csproj",
         "packagesPath": "C:\\Users\\carad\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\carad\\Source\\Repos\\Back-end.NET_API_REST\\P7CreateRestApi\\obj\\",
+        "outputPath": "C:\\Users\\carad\\source\\repos\\Back-end.NET_API_REST\\P7CreateRestApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
